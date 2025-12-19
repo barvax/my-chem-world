@@ -93,6 +93,7 @@ function SolventsTable({ solvents, onEdit, onDelete }) {
           <thead className="bg-slate-50 text-slate-600">
             <tr>
               <Th>Name</Th>
+               <Th>Real Name</Th>
               <Th>Type</Th>
               <Th>Polarity</Th>
               <Th>Boiling °C</Th>
@@ -106,6 +107,9 @@ function SolventsTable({ solvents, onEdit, onDelete }) {
             {solvents.map(solvent => (
               <tr key={solvent.id} className="border-t">
                 <Td>{solvent.name || "-"}</Td>
+                <td className="px-4 py-2 text-slate-600 text-sm">
+  {solvent.actualSolventName || "—"}
+</td>
                 <Td>{formatType(solvent.solventType)}</Td>
                 <Td>{solvent.polarityIndex ?? "-"}</Td>
                 <Td>{solvent.boilingPoint ?? "-"}</Td>

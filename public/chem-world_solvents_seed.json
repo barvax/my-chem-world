@@ -1,0 +1,152 @@
+{
+  "meta": {
+    "worldName": "Chem World",
+    "exportType": "solvents_only",
+    "schemaVersion": "1.0",
+    "exportedAt": "2025-01-18T00:00:00Z"
+  },
+  "data": {
+    "solvents": [
+      {
+        "id": "solvent_methanol",
+        "name": "Spirit of Ashes",
+        "actualSolventName": "Methanol",
+        "solventType": "polar_protic",
+        "polarityIndex": 90,
+        "boilingPoint": 65,
+        "freezingPoint": -98,
+        "volatility": 75,
+        "toxicity": 80,
+        "flammability": 85,
+        "isProtic": true,
+        "isExperimental": false
+      },
+      {
+        "id": "solvent_ethanol",
+        "name": "Clear Ember",
+        "actualSolventName": "Ethanol",
+        "solventType": "polar_protic",
+        "polarityIndex": 85,
+        "boilingPoint": 78,
+        "freezingPoint": -114,
+        "volatility": 60,
+        "toxicity": 25,
+        "flammability": 70,
+        "isProtic": true,
+        "isExperimental": false
+      },
+      {
+        "id": "solvent_water",
+        "name": "Aqua Prime",
+        "actualSolventName": "Water",
+        "solventType": "polar_protic",
+        "polarityIndex": 100,
+        "boilingPoint": 100,
+        "freezingPoint": 0,
+        "volatility": 10,
+        "toxicity": 0,
+        "flammability": 0,
+        "isProtic": true,
+        "isExperimental": false
+      },
+      {
+        "id": "solvent_acetone",
+        "name": "Swift Dissolver",
+        "actualSolventName": "Acetone",
+        "solventType": "polar_aprotic",
+        "polarityIndex": 70,
+        "boilingPoint": 56,
+        "freezingPoint": -95,
+        "volatility": 90,
+        "toxicity": 30,
+        "flammability": 85,
+        "isProtic": false,
+        "isExperimental": false
+      },
+      {
+        "id": "solvent_dmso",
+        "name": "Deep Carrier",
+        "actualSolventName": "Dimethyl Sulfoxide (DMSO)",
+        "solventType": "polar_aprotic",
+        "polarityIndex": 95,
+        "boilingPoint": 189,
+        "freezingPoint": 18,
+        "volatility": 15,
+        "toxicity": 40,
+        "flammability": 10,
+        "isProtic": false,
+        "isExperimental": false
+      },
+      {
+        "id": "solvent_hexane",
+        "name": "Oil Whisper",
+        "actualSolventName": "Hexane",
+        "solventType": "non_polar",
+        "polarityIndex": 5,
+        "boilingPoint": 69,
+        "freezingPoint": -95,
+        "volatility": 80,
+        "toxicity": 60,
+        "flammability": 90,
+        "isProtic": false,
+        "isExperimental": false
+      },
+      {
+        "id": "solvent_toluene",
+        "name": "Amber Solvent",
+        "actualSolventName": "Toluene",
+        "solventType": "non_polar",
+        "polarityIndex": 10,
+        "boilingPoint": 111,
+        "freezingPoint": -95,
+        "volatility": 55,
+        "toxicity": 50,
+        "flammability": 75,
+        "isProtic": false,
+        "isExperimental": false
+      },
+      {
+        "id": "solvent_diethyl_ether",
+        "name": "Vapor Veil",
+        "actualSolventName": "Diethyl Ether",
+        "solventType": "non_polar",
+        "polarityIndex": 15,
+        "boilingPoint": 35,
+        "freezingPoint": -116,
+        "volatility": 95,
+        "toxicity": 35,
+        "flammability": 100,
+        "isProtic": false,
+        "isExperimental": false
+      },
+      {
+        "id": "solvent_acetonitrile",
+        "name": "Sharp Medium",
+        "actualSolventName": "Acetonitrile",
+        "solventType": "polar_aprotic",
+        "polarityIndex": 75,
+        "boilingPoint": 82,
+        "freezingPoint": -45,
+        "volatility": 65,
+        "toxicity": 55,
+        "flammability": 70,
+        "isProtic": false,
+        "isExperimental": false
+      },
+      {
+        "id": "solvent_glycerol",
+        "name": "Thick Elixir",
+        "actualSolventName": "Glycerol",
+        "solventType": "polar_protic",
+        "polarityIndex": 95,
+        "boilingPoint": 290,
+        "freezingPoint": 18,
+        "volatility": 5,
+        "toxicity": 0,
+        "flammability": 10,
+        "isProtic": true,
+        "isExperimental": false
+      }
+    ]
+  }
+}

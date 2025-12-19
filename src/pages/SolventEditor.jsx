@@ -11,6 +11,8 @@ import { db } from "../firebase/firebase";
 export default function SolventEditor({ solvent, onSaved }) {
   const [form, setForm] = useState({
     name: "",
+     actualSolventName: "", 
+       description: "",
     solventType: "",
     polarityIndex: "",
     boilingPoint: "",
@@ -83,7 +85,12 @@ export default function SolventEditor({ solvent, onSaved }) {
           value={form.name}
           onChange={v => updateField("name", v)}
         />
-
+  <Input
+    label="Actual Solvent Name"
+    value={form.actualSolventName}
+    onChange={v => updateField("actualSolventName", v)}
+    placeholder="Methanol, Ethanol, Acetone..."
+  />
         <Select
           label="Solvent Type"
           value={form.solventType}
