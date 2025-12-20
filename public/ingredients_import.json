@@ -1,0 +1,226 @@
+{
+  "ingredients": [
+    {
+      "id": "creeping_mushroom",
+      "name": "Creeping Mushroom",
+      "familyId": "fungi",
+      "description": "A slow-growing forest mushroom known for its creeping mycelium and rich flavonoid content.",
+      "rarity": "common",
+      "image": {
+        "url": "https://example.com/images/fungi/creeping_mushroom.png",
+        "alt": "Creeping Mushroom"
+      },
+      "physical": {
+        "density": "low",
+        "moisture": 70,
+        "stability": 45,
+        "organic": true
+      },
+      "processing": {
+        "heatSensitivity": 60,
+        "degradationRate": "medium",
+        "notes": "Sensitive to prolonged heating; best extracted gently."
+      }
+    },
+    {
+      "id": "glowcap",
+      "name": "Glowcap",
+      "familyId": "fungi",
+      "description": "A bioluminescent mushroom emitting faint blue light, rich in alkaloids.",
+      "rarity": "uncommon",
+      "image": {
+        "url": "https://example.com/images/fungi/glowcap.png",
+        "alt": "Glowcap Mushroom"
+      },
+      "physical": {
+        "density": "low",
+        "moisture": 65,
+        "stability": 40,
+        "organic": true
+      },
+      "processing": {
+        "heatSensitivity": 70,
+        "degradationRate": "high",
+        "notes": "Alkaloids degrade quickly under heat."
+      }
+    },
+    {
+      "id": "sporeveil_mushroom",
+      "name": "Sporeveil Mushroom",
+      "familyId": "fungi",
+      "description": "A pale mushroom releasing acidic spores when dried.",
+      "rarity": "uncommon",
+      "image": {
+        "url": "https://example.com/images/fungi/sporeveil.png",
+        "alt": "Sporeveil Mushroom"
+      },
+      "physical": {
+        "density": "medium",
+        "moisture": 55,
+        "stability": 50,
+        "organic": true
+      },
+      "processing": {
+        "heatSensitivity": 55,
+        "degradationRate": "medium",
+        "notes": "Spores remain active after mild drying."
+      }
+    },
+    {
+      "id": "ashcap_fungus",
+      "name": "Ashcap Fungus",
+      "familyId": "fungi",
+      "description": "A dark, ash-covered fungus often found in burned forest areas.",
+      "rarity": "rare",
+      "image": {
+        "url": "https://example.com/images/fungi/ashcap.png",
+        "alt": "Ashcap Fungus"
+      },
+      "physical": {
+        "density": "medium",
+        "moisture": 40,
+        "stability": 65,
+        "organic": true
+      },
+      "processing": {
+        "heatSensitivity": 35,
+        "degradationRate": "low",
+        "notes": "Surprisingly stable under heat."
+      }
+    },
+
+    {
+      "id": "sunpetal",
+      "name": "Sunpetal",
+      "familyId": "roots",
+      "description": "Bright yellow petals commonly used in warming brews and tonics.",
+      "rarity": "common",
+      "image": {
+        "url": "https://example.com/images/roots/sunpetal.png",
+        "alt": "Sunpetal"
+      },
+      "physical": {
+        "density": "low",
+        "moisture": 45,
+        "stability": 45,
+        "organic": true
+      },
+      "processing": {
+        "heatSensitivity": 50,
+        "degradationRate": "medium",
+        "notes": "Releases aroma when gently heated."
+      }
+    },
+    {
+      "id": "duskmint",
+      "name": "Duskmint",
+      "familyId": "roots",
+      "description": "A cool-toned herb growing in shaded areas, rich in aromatic terpenes.",
+      "rarity": "uncommon",
+      "image": {
+        "url": "https://example.com/images/roots/duskmint.png",
+        "alt": "Duskmint"
+      },
+      "physical": {
+        "density": "low",
+        "moisture": 50,
+        "stability": 40,
+        "organic": true
+      },
+      "processing": {
+        "heatSensitivity": 65,
+        "degradationRate": "high",
+        "notes": "Terpenes evaporate quickly."
+      }
+    },
+    {
+      "id": "thornroot",
+      "name": "Thornroot",
+      "familyId": "roots",
+      "description": "A bitter root containing glycosides used in resistance brews.",
+      "rarity": "uncommon",
+      "image": {
+        "url": "https://example.com/images/roots/thornroot.png",
+        "alt": "Thornroot"
+      },
+      "physical": {
+        "density": "high",
+        "moisture": 35,
+        "stability": 60,
+        "organic": true
+      },
+      "processing": {
+        "heatSensitivity": 40,
+        "degradationRate": "low",
+        "notes": "Requires grinding before extraction."
+      }
+    },
+    {
+      "id": "bittervine",
+      "name": "Bittervine",
+      "familyId": "roots",
+      "description": "A climbing vine known for its intensely bitter sap.",
+      "rarity": "rare",
+      "image": {
+        "url": "https://example.com/images/roots/bittervine.png",
+        "alt": "Bittervine"
+      },
+      "physical": {
+        "density": "medium",
+        "moisture": 55,
+        "stability": 50,
+        "organic": true
+      },
+      "processing": {
+        "heatSensitivity": 45,
+        "degradationRate": "medium",
+        "notes": "Sap thickens when heated."
+      }
+    },
+
+    {
+      "id": "iron_salt",
+      "name": "Iron Salt",
+      "familyId": "crystals",
+      "description": "A mineral salt rich in iron ions, commonly used in strengthening mixtures.",
+      "rarity": "common",
+      "image": {
+        "url": "https://example.com/images/crystals/iron_salt.png",
+        "alt": "Iron Salt"
+      },
+      "physical": {
+        "density": "high",
+        "moisture": 5,
+        "stability": 85,
+        "organic": false
+      },
+      "processing": {
+        "heatSensitivity": 10,
+        "degradationRate": "very_low",
+        "notes": "Highly stable; does not degrade under heat."
+      }
+    },
+    {
+      "id": "azure_crystal",
+      "name": "Azure Crystal",
+      "familyId": "crystals",
+      "description": "A rare blue crystal containing complex ionic structures.",
+      "rarity": "rare",
+      "image": {
+        "url": "https://example.com/images/crystals/azure_crystal.png",
+        "alt": "Azure Crystal"
+      },
+      "physical": {
+        "density": "high",
+        "moisture": 0,
+        "stability": 90,
+        "organic": false
+      },
+      "processing": {
+        "heatSensitivity": 20,
+        "degradationRate": "very_low",
+        "notes": "Requires extreme conditions to alter."
+      }
+    }
+  ]
+}

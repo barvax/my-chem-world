@@ -3,6 +3,8 @@ import { exportSolvents } from "../utils/exportSolvents";
 import { importSolventsFromFile } from "../utils/importSolvents";
 import { exportMolecules } from "../utils/exportMolecules";
 import { importMoleculesFromFile } from "../utils/importMolecules";
+import { importIngredientsFromFile } from "../utils/importIngredients";
+import { exportIngredients } from "../utils/exportIngredients";
 
 const menuItems = [
   { label: "Solvents", path: "/solvents" },
@@ -128,6 +130,37 @@ export default function Sidebar({ mobile, onClose }) {
     }}
   />
 </label>
+{/* Ingredients Import */}
+<label className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 rounded-md cursor-pointer">
+  📥 Import Ingredients
+  <input
+    type="file"
+    accept="application/json"
+    className="hidden"
+    onChange={async e => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      try {
+        const count = await importIngredientsFromFile(file);
+        alert(`Imported ${count} ingredients`);
+      } catch (err) {
+        console.error(err);
+        alert("Failed to import ingredients");
+      }
+
+      e.target.value = "";
+    }}
+  />
+</label>
+
+{/* Ingredients Export */}
+<button
+  onClick={exportIngredients}
+  className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 rounded-md"
+>
+  ⬇️ Export Ingredients
+</button>
 
       </div>
     </aside>
