@@ -4,6 +4,8 @@ import SolventsPage from "./pages/SolventsPage";
 import IngredientsPage from "./pages/IngredientsPage";
 import MoleculesPage from "./pages/MoleculesPage";
 import ReactionsPage from "./pages/ReactionsPage";
+import RulesPage from "./pages/RulesPage";
+import FamilyIngredientsPage from "./pages/FamilyIngredientsPage";
 
 export default function App() {
   return (
@@ -14,6 +16,9 @@ export default function App() {
         <Route path="ingredients" element={<IngredientsPage />} />
         <Route path="molecules" element={<MoleculesPage />} />
         <Route path="reactions" element={<ReactionsPage />} />
+        <Route path="/rules" element={<RulesPage />} />
+<Route path="/ingredients/families/:familyId" element={<FamilyIngredientsPage />} />
+
       </Route>
     </Routes>
   );

@@ -8,7 +8,8 @@ const menuItems = [
   { label: "Solvents", path: "/solvents" },
   { label: "Ingredients", path: "/ingredients" },
   { label: "Molecules", path: "/molecules" },
-  { label: "Reactions", path: "/reactions" }
+  { label: "Reactions", path: "/reactions" },
+   { label: "Rules", path: "/rules" }
 ];
 
 export default function Sidebar({ mobile, onClose }) {
@@ -72,6 +73,7 @@ export default function Sidebar({ mobile, onClose }) {
             >
               {item.label}
             </NavLink>
+            
             
           ))}
         </nav>
