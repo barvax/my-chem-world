@@ -1,24 +1,20 @@
+// src/App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
-import SolventsPage from "./pages/SolventsPage";
-import IngredientsPage from "./pages/IngredientsPage";
-import MoleculesPage from "./pages/MoleculesPage";
-import ReactionsPage from "./pages/ReactionsPage";
-import RulesPage from "./pages/RulesPage";
-import FamilyIngredientsPage from "./pages/FamilyIngredientsPage";
+import IngredientFamiliesPage from "./pages/IngredientFamilies/IngredientFamiliesPage";
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<MainLayout />}>
-        <Route index element={<Navigate to="/solvents" replace />} />
-        <Route path="solvents" element={<SolventsPage />} />
-        <Route path="ingredients" element={<IngredientsPage />} />
-        <Route path="molecules" element={<MoleculesPage />} />
-        <Route path="reactions" element={<ReactionsPage />} />
-        <Route path="/rules" element={<RulesPage />} />
-<Route path="/ingredients/families/:familyId" element={<FamilyIngredientsPage />} />
+      <Route element={<MainLayout />}>
+        {/* Default */}
+        <Route path="/" element={<Navigate to="/ingredient-families" />} />
 
+        {/* Ingredient Families */}
+        <Route
+          path="/ingredient-families"
+          element={<IngredientFamiliesPage />}
+        />
       </Route>
     </Routes>
   );
