@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 import { getIngredientFamilies } from "../../services/ingredientFamilies.service";
 import { getIngredients } from "../../services/ingredients.service";
 import { useNavigate } from "react-router-dom";
+import IngredientCard from "./IngredientCard"
+import IngredientModal from "./IngredientModal";
+
+
 export default function IngredientsOverview() {
   const [families, setFamilies] = useState([]);
   const [ingredients, setIngredients] = useState([]);
   const [activeFamilyId, setActiveFamilyId] = useState(null);
+  const [selectedIngredient, setSelectedIngredient] = useState(null);
 const navigate = useNavigate();
   useEffect(() => {
     async function load() {
@@ -59,26 +64,22 @@ const navigate = useNavigate();
         <p className="text-slate-500">No ingredients in this family.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredIngredients.map(ing => (
-           <div
-  key={ing.id}
-  onClick={() => navigate(`/ingredients/edit/${ing.id}`)}
-  className="bg-white border rounded-xl p-4 cursor-pointer hover:shadow"
->
-
-              <h3 className="font-semibold text-slate-800">
-                {ing.name}
-              </h3>
-              <p className="text-sm text-slate-600">
-                Moisture: {ing.physical?.moisture ?? "—"}%
-              </p>
-              <p className="text-xs text-slate-400">
-                {ing.rarity}
-              </p>
-            </div>
-          ))}
+      {filteredIngredients.map(ing => (
+  <IngredientCard
+    key={ing.id}
+    ingredient={ing}
+    onEdit={() => navigate(`/ingredients/edit/${ing.id}`)}
+    onOpen={() => setSelectedIngredient(ing)}
+  />
+  
+))}
+<IngredientModal
+  ingredient={selectedIngredient}
+  onClose={() => setSelectedIngredient(null)}
+/>
         </div>
       )}
     </div>
   );
 }
+
