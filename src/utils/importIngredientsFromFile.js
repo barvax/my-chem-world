@@ -3,7 +3,9 @@ import {
   collection,
   addDoc,
   getDocs,
-  serverTimestamp
+  serverTimestamp,
+  updateDoc,
+  doc
 } from "firebase/firestore";
 
 export async function importIngredientsFromFile(file) {
@@ -14,30 +16,33 @@ export async function importIngredientsFromFile(file) {
     throw new Error("Invalid JSON format: expected array");
   }
 
-  // 1️⃣ טוענים את כל המשפחות וממפים לפי worldId
+  // 1) Families map by worldId -> { id, worldId }
   const famSnap = await getDocs(collection(db, "ingredientFamilies"));
-
   const familyByWorldId = {};
-  famSnap.docs.forEach(doc => {
-    const fam = doc.data();
+  famSnap.docs.forEach((d) => {
+    const fam = d.data();
     if (fam.worldId) {
-      familyByWorldId[fam.worldId] = {
-        id: doc.id,
-        worldId: fam.worldId
-      };
+      familyByWorldId[fam.worldId] = { id: d.id, worldId: fam.worldId };
     }
+  });
+
+  // 2) Existing ingredients map by worldId -> docId (for upsert)
+  const ingSnap = await getDocs(collection(db, "ingredients"));
+  const ingredientDocIdByWorldId = {};
+  ingSnap.docs.forEach((d) => {
+    const ing = d.data();
+    if (ing.worldId) ingredientDocIdByWorldId[ing.worldId] = d.id;
   });
 
   let count = 0;
 
   for (const ing of data) {
-    if (!ing.name || !ing.familyWorldId) {
+    if (!ing.worldId || !ing.name || !ing.familyWorldId) {
       console.warn("Skipped invalid ingredient:", ing);
       continue;
     }
 
     const family = familyByWorldId[ing.familyWorldId];
-
     if (!family) {
       console.warn(
         `Skipped ingredient "${ing.name}": unknown familyWorldId "${ing.familyWorldId}"`
@@ -45,13 +50,25 @@ export async function importIngredientsFromFile(file) {
       continue;
     }
 
-    await addDoc(collection(db, "ingredients"), {
+    const payload = {
       ...ing,
-      familyId: family.id,              // 🔑 Firestore ID
-      familyWorldId: family.worldId,     // 🌍 World ID
-      createdAt: serverTimestamp(),
+      familyId: family.id,          // Firestore ID
+      familyWorldId: family.worldId,// World ID
       updatedAt: serverTimestamp()
-    });
+    };
+
+    const existingDocId = ingredientDocIdByWorldId[ing.worldId];
+
+    if (existingDocId) {
+      await updateDoc(doc(db, "ingredients", existingDocId), payload);
+    } else {
+      await addDoc(collection(db, "ingredients"), {
+        ...payload,
+        createdAt: serverTimestamp()
+      });
+      // refresh map to avoid duplicates in same import file
+      ingredientDocIdByWorldId[ing.worldId] = "__created__";
+    }
 
     count++;
   }

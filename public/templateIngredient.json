@@ -1,6 +1,7 @@
 [
   {
-    "name": "Ron",
+   "worldId": "ing_spider_fang1",
+    "name": "ron",
     "familyWorldId": "animal",
     "rarity": "common",
     "imagePath": "/images/ingredients/spider-fang.png",

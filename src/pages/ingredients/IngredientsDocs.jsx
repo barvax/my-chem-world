@@ -16,6 +16,10 @@ export default function IngredientsDocs() {
         <h3 className="text-lg font-semibold text-slate-700">
           Basic Information
         </h3>
+<DocItem
+  title="World ID"
+  description="Stable identifier (e.g. ing_spider_fang). Used for imports, references in recipes and cross-environment stability."
+/>
 
         <DocItem
           title="Name"
@@ -102,11 +106,10 @@ export default function IngredientsDocs() {
         <h3 className="text-lg font-semibold text-slate-700">JSON Template</h3>
 
         <div className="bg-white border rounded-lg p-4 space-y-2">
-          <p className="text-sm text-slate-600">
-            Use this template for bulk import (Import JSON). The file must be an{" "}
-            <b>array</b>. Minimum required fields per item: <b>name</b> and{" "}
-            <b>familyWorldId</b>.
-          </p>
+        <p className="text-sm text-slate-600">
+  Use this template for bulk import (Import JSON). The file must be an <b>array</b>. Minimum required fields per item: <b>worldId</b>, <b>name</b> and <b>familyWorldId</b>.
+</p>
+
           <p className="text-sm text-slate-600">
             Tip: <b>familyWorldId</b> must match an existing Ingredient Family{" "}
             <b>worldId</b>.
@@ -116,6 +119,7 @@ export default function IngredientsDocs() {
         <pre className="bg-slate-900 text-slate-100 rounded-lg p-4 text-xs overflow-auto border border-slate-800">
           <code>{`[
   {
+   "worldId": "ing_spider_fang",
     "name": "Spider Fang",
     "familyWorldId": "animal",
     "rarity": "common",

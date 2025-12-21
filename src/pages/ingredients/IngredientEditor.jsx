@@ -21,6 +21,7 @@ export default function IngredientEditor() {
   const isEdit = Boolean(ingredientId);
 
   const [form, setForm] = useState({
+    worldId: "",
     name: "",
     familyId: "",
     rarity: "common",
@@ -40,6 +41,14 @@ export default function IngredientEditor() {
   });
 
   useEffect(() => {
+    async function load() {
+      const fams = await getIngredientFamilies();
+      setFamilies(fams);
+    }
+    load();
+  }, []);
+
+  useEffect(() => {
     if (!ingredientId) return;
 
     async function loadIngredient() {
@@ -52,25 +61,42 @@ export default function IngredientEditor() {
         return;
       }
 
-      setForm(snap.data());
+      const data = snap.data();
+
+      setForm((prev) => ({
+        ...prev,
+        ...data,
+        physical: { ...prev.physical, ...(data.physical || {}) },
+        gameplay: { ...prev.gameplay, ...(data.gameplay || {}) }
+      }));
     }
 
     loadIngredient();
   }, [ingredientId, navigate]);
 
-  useEffect(() => {
-    async function load() {
-      const data = await getIngredientFamilies();
-      setFamilies(data);
-    }
-    load();
-  }, []);
+  function update(path, value) {
+    setForm((prev) => {
+      const copy = structuredClone(prev);
+      let ref = copy;
+      for (let i = 0; i < path.length - 1; i++) ref = ref[path[i]];
+      ref[path[path.length - 1]] = value;
+      return copy;
+    });
+  }
 
   async function handleSave() {
     if (saving) return;
 
-    if (!form.name || !form.familyId) {
-      alert("Name and family are required");
+    if (!form.worldId || !form.name || !form.familyId) {
+      alert("World ID, name and family are required");
+      return;
+    }
+
+    const family = families.find((f) => f.id === form.familyId);
+    const familyWorldId = family?.worldId || "";
+
+    if (!familyWorldId) {
+      alert("Selected family has no worldId (please fix the family)");
       return;
     }
 
@@ -78,6 +104,7 @@ export default function IngredientEditor() {
 
     const payload = {
       ...form,
+      familyWorldId,
       updatedAt: serverTimestamp()
     };
 
@@ -91,7 +118,6 @@ export default function IngredientEditor() {
         });
       }
 
-      // Back to Overview
       navigate("/ingredients");
     } catch (err) {
       console.error(err);
@@ -101,25 +127,22 @@ export default function IngredientEditor() {
     }
   }
 
-  function update(path, value) {
-    setForm((prev) => {
-      const copy = structuredClone(prev);
-      let ref = copy;
-      for (let i = 0; i < path.length - 1; i++) {
-        ref = ref[path[i]];
-      }
-      ref[path[path.length - 1]] = value;
-      return copy;
-    });
-  }
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* LEFT – BASIC INFO */}
       <div className="bg-white border rounded-xl p-6 space-y-5">
-        <h2 className="text-lg font-semibold text-slate-800">
-          Basic Information
-        </h2>
+        <h2 className="text-lg font-semibold text-slate-800">Basic Information</h2>
+
+        <div>
+          <label className="label">World ID</label>
+          <input
+            className="input w-full"
+            placeholder="ing_spider_fang"
+            value={form.worldId}
+            onChange={(e) => update(["worldId"], e.target.value)}
+            disabled={isEdit} // כמו במשפחה/סולבנטים: לא משנים worldId בעריכה
+          />
+        </div>
 
         <div>
           <label className="label">Ingredient Name</label>
@@ -173,9 +196,7 @@ export default function IngredientEditor() {
 
       {/* CENTER – PHYSICAL PROPERTIES */}
       <div className="bg-white border rounded-xl p-6 space-y-5">
-        <h2 className="text-lg font-semibold text-slate-800">
-          Physical Properties
-        </h2>
+        <h2 className="text-lg font-semibold text-slate-800">Physical Properties</h2>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -212,24 +233,21 @@ export default function IngredientEditor() {
             />
           </div>
 
-        <div className="flex items-center gap-2 mt-6">
-  <input
-    type="checkbox"
-    className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/20"
-    checked={form.physical.organic}
-    onChange={(e) => update(["physical", "organic"], e.target.checked)}
-  />
-  <span className="text-sm text-slate-700">Organic</span>
-</div>
-
+          <div className="flex items-center gap-2 mt-6">
+            <input
+              type="checkbox"
+              className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/20"
+              checked={form.physical.organic}
+              onChange={(e) => update(["physical", "organic"], e.target.checked)}
+            />
+            <span className="text-sm text-slate-700">Organic</span>
+          </div>
         </div>
       </div>
 
       {/* RIGHT – GAMEPLAY / EFFECTS */}
       <div className="bg-white border rounded-xl p-6 space-y-5">
-        <h2 className="text-lg font-semibold text-slate-800">
-          Gameplay / Effects
-        </h2>
+        <h2 className="text-lg font-semibold text-slate-800">Gameplay / Effects</h2>
 
         <div>
           <label className="label">Value</label>
@@ -277,10 +295,7 @@ export default function IngredientEditor() {
         <button
           onClick={() => navigate("/ingredients")}
           disabled={saving}
-          className={
-            "px-4 py-2 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 active:translate-y-px transition " +
-            (saving ? "opacity-60" : "")
-          }
+          className="px-4 py-2 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 active:translate-y-px transition"
         >
           Cancel
         </button>
@@ -288,10 +303,7 @@ export default function IngredientEditor() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className={
-            "px-4 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-800 active:translate-y-px transition " +
-            (saving ? "opacity-60" : "")
-          }
+          className="px-4 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-800 active:translate-y-px transition disabled:opacity-60"
         >
           {saving ? "Saving..." : "Save Ingredient"}
         </button>
