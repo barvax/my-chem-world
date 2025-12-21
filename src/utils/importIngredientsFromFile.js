@@ -8,6 +8,89 @@ import {
   doc
 } from "firebase/firestore";
 
+function toNumber(v) {
+  if (v === "" || v === null || v === undefined) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function normalizeMolecules(raw, ingredientWorldId) {
+  if (raw === undefined || raw === null) {
+    return { molecules: [], sumMax: 0 };
+  }
+
+  if (!Array.isArray(raw)) {
+    console.warn(
+      `Ingredient "${ingredientWorldId}": molecules must be an array. Ignored.`
+    );
+    return { molecules: [], sumMax: 0 };
+  }
+
+  const molecules = [];
+  let sumMax = 0;
+
+  for (const m of raw) {
+    if (!m || typeof m !== "object") {
+      console.warn(
+        `Ingredient "${ingredientWorldId}": skipped invalid molecule entry (not an object).`,
+        m
+      );
+      continue;
+    }
+
+    const moleculeWorldId = (m.moleculeWorldId || "").trim();
+    const moleculeName = (m.moleculeName || "").trim();
+
+    if (!moleculeWorldId && !moleculeName) {
+      console.warn(
+        `Ingredient "${ingredientWorldId}": skipped molecule entry missing moleculeWorldId/moleculeName.`,
+        m
+      );
+      continue;
+    }
+
+    // allow min only / max only (we mirror the provided one)
+    const minN = toNumber(m.minWtPercent);
+    const maxN = toNumber(m.maxWtPercent);
+
+    const minWtPercent = minN !== null ? minN : (maxN !== null ? maxN : null);
+    const maxWtPercent = maxN !== null ? maxN : (minN !== null ? minN : null);
+
+    if (minWtPercent === null || maxWtPercent === null) {
+      console.warn(
+        `Ingredient "${ingredientWorldId}": skipped molecule entry with invalid min/max.`,
+        m
+      );
+      continue;
+    }
+
+    if (
+      minWtPercent < 0 ||
+      maxWtPercent < 0 ||
+      minWtPercent > 100 ||
+      maxWtPercent > 100 ||
+      minWtPercent > maxWtPercent
+    ) {
+      console.warn(
+        `Ingredient "${ingredientWorldId}": skipped molecule entry with out-of-range or min>max.`,
+        m
+      );
+      continue;
+    }
+
+    sumMax += maxWtPercent;
+
+    molecules.push({
+      ...(moleculeWorldId ? { moleculeWorldId } : {}),
+      ...(moleculeName ? { moleculeName } : {}),
+      minWtPercent,
+      maxWtPercent
+    });
+  }
+
+  return { molecules, sumMax };
+}
+
 export async function importIngredientsFromFile(file) {
   const text = await file.text();
   const data = JSON.parse(text);
@@ -16,7 +99,7 @@ export async function importIngredientsFromFile(file) {
     throw new Error("Invalid JSON format: expected array");
   }
 
-  // 1) Families map by worldId -> { id, worldId }
+  // 1) Load families map by worldId -> { id, worldId }
   const famSnap = await getDocs(collection(db, "ingredientFamilies"));
   const familyByWorldId = {};
   famSnap.docs.forEach((d) => {
@@ -38,22 +121,32 @@ export async function importIngredientsFromFile(file) {
 
   for (const ing of data) {
     if (!ing.worldId || !ing.name || !ing.familyWorldId) {
-      console.warn("Skipped invalid ingredient:", ing);
+      console.warn("Skipped invalid ingredient (missing worldId/name/familyWorldId):", ing);
       continue;
     }
 
     const family = familyByWorldId[ing.familyWorldId];
     if (!family) {
       console.warn(
-        `Skipped ingredient "${ing.name}": unknown familyWorldId "${ing.familyWorldId}"`
+        `Skipped ingredient "${ing.worldId}": unknown familyWorldId "${ing.familyWorldId}"`
+      );
+      continue;
+    }
+
+    // Molecules normalization + rule: SUM(max) <= 100
+    const { molecules, sumMax } = normalizeMolecules(ing.molecules, ing.worldId);
+    if (sumMax > 100.0001) {
+      console.warn(
+        `Skipped ingredient "${ing.worldId}": sum of molecules maxWtPercent exceeds 100 (sumMax=${sumMax}).`
       );
       continue;
     }
 
     const payload = {
       ...ing,
-      familyId: family.id,          // Firestore ID
-      familyWorldId: family.worldId,// World ID
+      molecules,                 // ✅ store normalized array (can be empty)
+      familyId: family.id,       // ✅ Firestore ID
+      familyWorldId: family.worldId, // ✅ worldId normalized from DB
       updatedAt: serverTimestamp()
     };
 
@@ -66,7 +159,6 @@ export async function importIngredientsFromFile(file) {
         ...payload,
         createdAt: serverTimestamp()
       });
-      // refresh map to avoid duplicates in same import file
       ingredientDocIdByWorldId[ing.worldId] = "__created__";
     }
 

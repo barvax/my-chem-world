@@ -6,7 +6,8 @@ import { NavLink } from "react-router-dom";
 const menuItems = [
   { label: "Solvents", path: "/solvents" },
    { label: "Ingredient Families", path: "/ingredient-families" },
-{ label: "Ingredients", path: "/ingredients" }
+{ label: "Ingredients", path: "/ingredients" },
+  { label: "Molecules", path: "/molecules" },
 
 ];
 

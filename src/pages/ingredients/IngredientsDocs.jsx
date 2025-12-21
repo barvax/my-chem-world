@@ -6,8 +6,7 @@ export default function IngredientsDocs() {
           Ingredient Documentation
         </h2>
         <p className="text-sm text-slate-500">
-          This section explains the meaning and usage of every field used to
-          define an Ingredient in the system.
+          Field reference + JSON template for bulk import.
         </p>
       </section>
 
@@ -16,10 +15,11 @@ export default function IngredientsDocs() {
         <h3 className="text-lg font-semibold text-slate-700">
           Basic Information
         </h3>
-<DocItem
-  title="World ID"
-  description="Stable identifier (e.g. ing_spider_fang). Used for imports, references in recipes and cross-environment stability."
-/>
+
+        <DocItem
+          title="World ID"
+          description="Stable identifier (e.g. ing_spider_fang). Used for imports and future recipe references."
+        />
 
         <DocItem
           title="Name"
@@ -27,18 +27,18 @@ export default function IngredientsDocs() {
         />
 
         <DocItem
-          title="Family"
-          description="Defines which Ingredient Family this ingredient belongs to (e.g. Fungi, Roots, Minerals). Used for grouping and extraction logic."
+          title="familyWorldId"
+          description="Links the ingredient to an Ingredient Family by family worldId (must exist)."
         />
 
         <DocItem
           title="Rarity"
-          description="Describes how common the ingredient is in the world. Affects availability, value and loot probability."
+          description="common / uncommon / rare / legendary. Affects availability, value and loot probability."
         />
 
         <DocItem
           title="Image Path"
-          description="Path or URL to the ingredient image. Used for cards, popups and future in-game visuals."
+          description="Path or URL to the ingredient image."
         />
       </section>
 
@@ -49,23 +49,23 @@ export default function IngredientsDocs() {
         </h3>
 
         <DocItem
-          title="Moisture (%)"
-          description="Represents the water content of the ingredient. High moisture may require drying and affects extraction efficiency."
+          title="physical.moisture"
+          description="Water content (%)."
         />
 
         <DocItem
-          title="Density"
-          description="Qualitative density (low / medium / high). Used for filtering, separation and processing rules."
+          title="physical.density"
+          description="low / medium / high."
         />
 
         <DocItem
-          title="Stability"
-          description="Indicates how resistant the ingredient is to heat, oxidation and degradation."
+          title="physical.stability"
+          description="Resistance to degradation."
         />
 
         <DocItem
-          title="Organic"
-          description="Marks whether the ingredient is organic/biological in nature. Used for biological vs inorganic rules."
+          title="physical.organic"
+          description="true/false."
         />
       </section>
 
@@ -75,30 +75,39 @@ export default function IngredientsDocs() {
           Gameplay / Effects
         </h3>
 
-        <DocItem
-          title="Value"
-          description="Economic value of the ingredient. Used for trading, crafting cost and rewards."
-        />
-
-        <DocItem
-          title="Toxicity"
-          description="Represents harmful effects. High toxicity may require safety measures or limit usage."
-        />
-
-        <DocItem
-          title="Volatility"
-          description="Indicates how reactive or unstable the ingredient is during processing."
-        />
+        <DocItem title="gameplay.value" description="Economic value." />
+        <DocItem title="gameplay.toxicity" description="Harmfulness level." />
+        <DocItem title="gameplay.volatility" description="Reactivity/instability." />
       </section>
 
-      {/* DESCRIPTION */}
+      {/* MOLECULES */}
       <section className="space-y-4">
-        <h3 className="text-lg font-semibold text-slate-700">Description</h3>
+        <h3 className="text-lg font-semibold text-slate-700">
+          Molecules (optional)
+        </h3>
 
         <DocItem
-          title="Description"
-          description="Free text describing lore, origin, usage and special notes about the ingredient."
+          title="molecules"
+          description="Optional array of molecules found in this ingredient (can be empty or omitted)."
         />
+
+        <DocItem
+          title="molecules[].moleculeWorldId / moleculeName"
+          description="Reference to the molecule. For now you can use moleculeWorldId (recommended) and/or moleculeName until the Molecules object exists."
+        />
+
+        <DocItem
+          title="molecules[].minWtPercent / maxWtPercent"
+          description="Weight-percent range of this molecule in the ingredient (e.g. 10–13)."
+        />
+
+        <div className="bg-white border rounded-lg p-4">
+          <h4 className="font-medium text-slate-800">Rule</h4>
+          <p className="text-sm text-slate-600 mt-1">
+            For each ingredient: <b>sum of all molecules maxWtPercent must be ≤ 100</b>.
+            No need to reach 100 — it’s ok to be lower.
+          </p>
+        </div>
       </section>
 
       {/* JSON TEMPLATE */}
@@ -106,25 +115,25 @@ export default function IngredientsDocs() {
         <h3 className="text-lg font-semibold text-slate-700">JSON Template</h3>
 
         <div className="bg-white border rounded-lg p-4 space-y-2">
-        <p className="text-sm text-slate-600">
-  Use this template for bulk import (Import JSON). The file must be an <b>array</b>. Minimum required fields per item: <b>worldId</b>, <b>name</b> and <b>familyWorldId</b>.
-</p>
-
           <p className="text-sm text-slate-600">
-            Tip: <b>familyWorldId</b> must match an existing Ingredient Family{" "}
-            <b>worldId</b>.
+            Import file must be an <b>array</b>. Minimum required per item:{" "}
+            <b>worldId</b>, <b>name</b>, <b>familyWorldId</b>.
+          </p>
+          <p className="text-sm text-slate-600">
+            <b>molecules</b> is optional. Rule enforced on import:{" "}
+            <b>Σ(maxWtPercent) ≤ 100</b>.
           </p>
         </div>
 
         <pre className="bg-slate-900 text-slate-100 rounded-lg p-4 text-xs overflow-auto border border-slate-800">
           <code>{`[
   {
-   "worldId": "ing_spider_fang",
+    "worldId": "ing_spider_fang",
     "name": "Spider Fang",
-    "familyWorldId": "animal",
+    "familyWorldId": "family_animal_derived",
     "rarity": "common",
     "imagePath": "/images/ingredients/spider-fang.png",
-    "description": "A sharp fang taken from a cave spider. Used in venom recipes.",
+    "description": "A sharp fang taken from a cave spider.",
 
     "physical": {
       "moisture": 23,
@@ -137,9 +146,36 @@ export default function IngredientsDocs() {
       "value": 54,
       "toxicity": 45,
       "volatility": 77
-    }
-  }
+    },
 
+    "molecules": [
+      { "moleculeWorldId": "mol_sugar", "moleculeName": "Sugar", "minWtPercent": 0, "maxWtPercent": 2 },
+      { "moleculeWorldId": "mol_venom_x", "moleculeName": "Venom-X", "minWtPercent": 10, "maxWtPercent": 13 }
+    ]
+  },
+  {
+    "worldId": "ing_ironroot",
+    "name": "Ironroot",
+    "familyWorldId": "family_roots",
+    "rarity": "uncommon",
+    "imagePath": "/images/ingredients/ironroot.png",
+    "description": "Dense root with metallic fibers.",
+
+    "physical": {
+      "moisture": 12,
+      "density": "high",
+      "stability": 65,
+      "organic": true
+    },
+
+    "gameplay": {
+      "value": 120,
+      "toxicity": 10,
+      "volatility": 20
+    },
+
+    "molecules": []
+  }
 ]`}</code>
         </pre>
       </section>

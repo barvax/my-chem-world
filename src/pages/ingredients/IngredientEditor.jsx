@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getIngredientFamilies } from "../../services/ingredientFamilies.service";
+import { getMolecules } from "../../services/molecules.service";
 import { db } from "../../firebase/firebase";
 
 import { useParams, useNavigate } from "react-router-dom";
@@ -12,10 +13,17 @@ import {
   serverTimestamp
 } from "firebase/firestore";
 
+function numOrNull(v) {
+  if (v === "" || v === null || v === undefined) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
 export default function IngredientEditor() {
   const [families, setFamilies] = useState([]);
-  const [saving, setSaving] = useState(false);
+  const [moleculesCatalog, setMoleculesCatalog] = useState([]);
 
+  const [saving, setSaving] = useState(false);
   const { ingredientId } = useParams();
   const navigate = useNavigate();
   const isEdit = Boolean(ingredientId);
@@ -26,28 +34,27 @@ export default function IngredientEditor() {
     familyId: "",
     rarity: "common",
     description: "",
+
     physical: {
       moisture: "",
       density: "",
       stability: "",
       organic: false
     },
+
     gameplay: {
       value: "",
       toxicity: "",
       volatility: ""
     },
-    imagePath: ""
+
+    imagePath: "",
+
+    // ✅ NEW: molecules composition (optional)
+    molecules: [] // [{ moleculeWorldId, minWtPercent, maxWtPercent }]
   });
 
-  useEffect(() => {
-    async function load() {
-      const fams = await getIngredientFamilies();
-      setFamilies(fams);
-    }
-    load();
-  }, []);
-
+  // Load ingredient (edit)
   useEffect(() => {
     if (!ingredientId) return;
 
@@ -67,36 +74,151 @@ export default function IngredientEditor() {
         ...prev,
         ...data,
         physical: { ...prev.physical, ...(data.physical || {}) },
-        gameplay: { ...prev.gameplay, ...(data.gameplay || {}) }
+        gameplay: { ...prev.gameplay, ...(data.gameplay || {}) },
+        molecules: Array.isArray(data.molecules) ? data.molecules : []
       }));
     }
 
     loadIngredient();
   }, [ingredientId, navigate]);
 
+  // Load families + molecules catalog
+  useEffect(() => {
+    async function load() {
+      const fams = await getIngredientFamilies();
+      setFamilies(fams);
+
+      // molecules collection (for dropdown)
+      try {
+        const mols = await getMolecules();
+        // prefer worldId sorting
+        mols.sort((a, b) =>
+          String(a.worldId || a.name || "").localeCompare(String(b.worldId || b.name || ""))
+        );
+        setMoleculesCatalog(mols);
+      } catch (e) {
+        console.warn("Failed to load molecules catalog", e);
+        setMoleculesCatalog([]);
+      }
+    }
+    load();
+  }, []);
+
+  // Helper: update nested paths
   function update(path, value) {
     setForm((prev) => {
       const copy = structuredClone(prev);
       let ref = copy;
-      for (let i = 0; i < path.length - 1; i++) ref = ref[path[i]];
+      for (let i = 0; i < path.length - 1; i++) {
+        ref = ref[path[i]];
+      }
       ref[path[path.length - 1]] = value;
       return copy;
     });
   }
 
+  // Molecules UI helpers
+  function addMoleculeRow() {
+    setForm((prev) => ({
+      ...prev,
+      molecules: [
+        ...(Array.isArray(prev.molecules) ? prev.molecules : []),
+        { moleculeWorldId: "", minWtPercent: "", maxWtPercent: "" }
+      ]
+    }));
+  }
+
+  function removeMoleculeRow(index) {
+    setForm((prev) => ({
+      ...prev,
+      molecules: prev.molecules.filter((_, i) => i !== index)
+    }));
+  }
+
+  function updateMoleculeRow(index, key, value) {
+    setForm((prev) => {
+      const next = structuredClone(prev);
+      next.molecules = Array.isArray(next.molecules) ? next.molecules : [];
+      next.molecules[index] = { ...(next.molecules[index] || {}), [key]: value };
+      return next;
+    });
+  }
+
+  const sumMax = useMemo(() => {
+    const rows = Array.isArray(form.molecules) ? form.molecules : [];
+    let total = 0;
+
+    for (const r of rows) {
+      if (!r?.moleculeWorldId) continue;
+      const max = numOrNull(r.maxWtPercent);
+      if (max !== null) total += max;
+    }
+    return total;
+  }, [form.molecules]);
+
   async function handleSave() {
     if (saving) return;
 
     if (!form.worldId || !form.name || !form.familyId) {
-      alert("World ID, name and family are required");
+      alert("World ID, Name and Family are required");
       return;
     }
 
     const family = families.find((f) => f.id === form.familyId);
     const familyWorldId = family?.worldId || "";
-
     if (!familyWorldId) {
-      alert("Selected family has no worldId (please fix the family)");
+      alert("Selected family is missing worldId (fix the family first).");
+      return;
+    }
+
+    // Normalize + validate molecules
+    const rawRows = Array.isArray(form.molecules) ? form.molecules : [];
+    const cleaned = [];
+    const seen = new Set();
+    let sumMaxLocal = 0;
+
+    for (const r of rawRows) {
+      const moleculeWorldId = String(r?.moleculeWorldId || "").trim();
+
+      // allow empty rows (ignore)
+      if (!moleculeWorldId) continue;
+
+      if (seen.has(moleculeWorldId)) {
+        alert(`Duplicate molecule detected: ${moleculeWorldId}`);
+        return;
+      }
+      seen.add(moleculeWorldId);
+
+      const minN = numOrNull(r.minWtPercent);
+      const maxN = numOrNull(r.maxWtPercent);
+
+      if (minN === null || maxN === null) {
+        alert(`Invalid min/max for molecule: ${moleculeWorldId}`);
+        return;
+      }
+      if (
+        minN < 0 ||
+        maxN < 0 ||
+        minN > 100 ||
+        maxN > 100 ||
+        minN > maxN
+      ) {
+        alert(`Range error for molecule ${moleculeWorldId} (min must be <= max, 0–100).`);
+        return;
+      }
+
+      sumMaxLocal += maxN;
+
+      cleaned.push({
+        moleculeWorldId,
+        minWtPercent: minN,
+        maxWtPercent: maxN
+      });
+    }
+
+    // Rule: SUM(max) <= 100
+    if (sumMaxLocal > 100.0001) {
+      alert(`Sum of MAX concentration exceeds 100% (current: ${sumMaxLocal}%).`);
       return;
     }
 
@@ -105,6 +227,7 @@ export default function IngredientEditor() {
     const payload = {
       ...form,
       familyWorldId,
+      molecules: cleaned,
       updatedAt: serverTimestamp()
     };
 
@@ -139,8 +262,8 @@ export default function IngredientEditor() {
             className="input w-full"
             placeholder="ing_spider_fang"
             value={form.worldId}
+            disabled={isEdit}
             onChange={(e) => update(["worldId"], e.target.value)}
-            disabled={isEdit} // כמו במשפחה/סולבנטים: לא משנים worldId בעריכה
           />
         </div>
 
@@ -156,7 +279,7 @@ export default function IngredientEditor() {
         <div>
           <label className="label">Family</label>
           <select
-            className="input w-full"
+            className="input w-full bg-white"
             value={form.familyId}
             onChange={(e) => update(["familyId"], e.target.value)}
           >
@@ -172,7 +295,7 @@ export default function IngredientEditor() {
         <div>
           <label className="label">Rarity</label>
           <select
-            className="input w-full"
+            className="input w-full bg-white"
             value={form.rarity}
             onChange={(e) => update(["rarity"], e.target.value)}
           >
@@ -212,7 +335,7 @@ export default function IngredientEditor() {
           <div>
             <label className="label">Density</label>
             <select
-              className="input w-full"
+              className="input w-full bg-white"
               value={form.physical.density}
               onChange={(e) => update(["physical", "density"], e.target.value)}
             >
@@ -240,7 +363,7 @@ export default function IngredientEditor() {
               checked={form.physical.organic}
               onChange={(e) => update(["physical", "organic"], e.target.checked)}
             />
-            <span className="text-sm text-slate-700">Organic</span>
+            <span className="text-sm text-slate-600">Organic</span>
           </div>
         </div>
       </div>
@@ -277,6 +400,113 @@ export default function IngredientEditor() {
             value={form.gameplay.volatility}
             onChange={(e) => update(["gameplay", "volatility"], e.target.value)}
           />
+        </div>
+      </div>
+
+      {/* ✅ MOLECULES */}
+      <div className="lg:col-span-3 bg-white border rounded-xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-800">Molecules (optional)</h2>
+            <p className="text-sm text-slate-500">
+              Each molecule has a weight-percent range. Rule: Σ(max) ≤ 100.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={addMoleculeRow}
+            className="px-4 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-800 active:translate-y-px transition"
+          >
+            + Add Molecule
+          </button>
+        </div>
+
+        <div
+          className={`text-sm font-medium ${
+            sumMax > 100 ? "text-red-600" : "text-slate-600"
+          }`}
+        >
+          Sum of MAX: {Number.isFinite(sumMax) ? sumMax : 0}% (must be ≤ 100%)
+        </div>
+
+        <div className="overflow-auto border rounded-lg">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-slate-600">
+              <tr>
+                <th className="text-left px-3 py-2">Molecule</th>
+                <th className="text-left px-3 py-2 w-32">Min %</th>
+                <th className="text-left px-3 py-2 w-32">Max %</th>
+                <th className="px-3 py-2 w-14"></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {(Array.isArray(form.molecules) ? form.molecules : []).length === 0 ? (
+                <tr>
+                  <td className="px-3 py-3 text-slate-400 italic" colSpan={4}>
+                    No molecules defined
+                  </td>
+                </tr>
+              ) : (
+                form.molecules.map((row, idx) => (
+                  <tr key={idx} className="border-t">
+                    <td className="px-3 py-2">
+                      <select
+                        className="input bg-white"
+                        value={row.moleculeWorldId || ""}
+                        onChange={(e) =>
+                          updateMoleculeRow(idx, "moleculeWorldId", e.target.value)
+                        }
+                      >
+                        <option value="">Select molecule…</option>
+                        {moleculesCatalog.map((m) => (
+                          <option key={m.id} value={m.worldId || ""}>
+                            {m.name} {m.worldId ? `(${m.worldId})` : ""}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+
+                    <td className="px-3 py-2">
+                      <input
+                        type="number"
+                        className="input"
+                        value={row.minWtPercent ?? ""}
+                        onChange={(e) =>
+                          updateMoleculeRow(idx, "minWtPercent", e.target.value)
+                        }
+                        placeholder="0"
+                      />
+                    </td>
+
+                    <td className="px-3 py-2">
+                      <input
+                        type="number"
+                        className="input"
+                        value={row.maxWtPercent ?? ""}
+                        onChange={(e) =>
+                          updateMoleculeRow(idx, "maxWtPercent", e.target.value)
+                        }
+                        placeholder="0"
+                      />
+                    </td>
+
+                    <td className="px-3 py-2 text-center">
+                      <button
+                        type="button"
+                        onClick={() => removeMoleculeRow(idx)}
+                        className="text-slate-500 hover:text-red-600"
+                        title="Remove"
+                      >
+                        ✕
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 
