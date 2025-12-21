@@ -12,3 +12,59 @@
 .animate-slide-in {
   animation: slideIn 0.2s ease-out;
 }
+
+
+/* Global click affordance */
+button,
+[role="button"],
+input[type="submit"],
+input[type="button"] {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+}
+
+/* Small press feedback for buttons (works app-wide) */
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.2s ease-out;
+}
+@layer components {
+  /* Labels */
+  .label {
+    @apply block text-xs font-semibold text-slate-600 mb-1;
+  }
+
+  /* Inputs / Selects / Textarea */
+  .input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm
+           placeholder:text-slate-400
+           focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900/40;
+  }
+
+  .input:disabled {
+    @apply bg-slate-100 text-slate-500 cursor-not-allowed;
+  }
+
+  /* Optional: nicer cards */
+  .card {
+    @apply bg-white border border-slate-200 rounded-2xl shadow-sm;
+  }
+}

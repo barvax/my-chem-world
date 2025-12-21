@@ -3,56 +3,60 @@ import { getIngredientFamilies } from "../../services/ingredientFamilies.service
 import { db } from "../../firebase/firebase";
 
 import { useParams, useNavigate } from "react-router-dom";
-import { doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
-
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  addDoc,
+  collection,
+  serverTimestamp
+} from "firebase/firestore";
 
 export default function IngredientEditor() {
   const [families, setFamilies] = useState([]);
-const [saving, setSaving] = useState(false);
-const { ingredientId } = useParams();
-const navigate = useNavigate();
+  const [saving, setSaving] = useState(false);
 
-const isEdit = Boolean(ingredientId);
+  const { ingredientId } = useParams();
+  const navigate = useNavigate();
+  const isEdit = Boolean(ingredientId);
 
   const [form, setForm] = useState({
     name: "",
     familyId: "",
     rarity: "common",
     description: "",
-
     physical: {
       moisture: "",
       density: "",
       stability: "",
       organic: false
     },
-
     gameplay: {
       value: "",
       toxicity: "",
       volatility: ""
     },
-
     imagePath: ""
   });
-useEffect(() => {
-  if (!ingredientId) return;
 
-  async function loadIngredient() {
-    const ref = doc(db, "ingredients", ingredientId);
-    const snap = await getDoc(ref);
+  useEffect(() => {
+    if (!ingredientId) return;
 
-    if (!snap.exists()) {
-      alert("Ingredient not found");
-      navigate("/ingredients");
-      return;
+    async function loadIngredient() {
+      const ref = doc(db, "ingredients", ingredientId);
+      const snap = await getDoc(ref);
+
+      if (!snap.exists()) {
+        alert("Ingredient not found");
+        navigate("/ingredients");
+        return;
+      }
+
+      setForm(snap.data());
     }
 
-    setForm(snap.data());
-  }
-
-  loadIngredient();
-}, [ingredientId, navigate]);
+    loadIngredient();
+  }, [ingredientId, navigate]);
 
   useEffect(() => {
     async function load() {
@@ -61,32 +65,44 @@ useEffect(() => {
     }
     load();
   }, []);
-async function handleSave() {
-  if (!form.name || !form.familyId) {
-    alert("Name and family are required");
-    return;
+
+  async function handleSave() {
+    if (saving) return;
+
+    if (!form.name || !form.familyId) {
+      alert("Name and family are required");
+      return;
+    }
+
+    setSaving(true);
+
+    const payload = {
+      ...form,
+      updatedAt: serverTimestamp()
+    };
+
+    try {
+      if (isEdit) {
+        await updateDoc(doc(db, "ingredients", ingredientId), payload);
+      } else {
+        await addDoc(collection(db, "ingredients"), {
+          ...payload,
+          createdAt: serverTimestamp()
+        });
+      }
+
+      // Back to Overview
+      navigate("/ingredients");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save ingredient");
+    } finally {
+      setSaving(false);
+    }
   }
-
-  const payload = {
-    ...form,
-    updatedAt: serverTimestamp()
-  };
-
-  if (isEdit) {
-    await updateDoc(doc(db, "ingredients", ingredientId), payload);
-  } else {
-    await addDoc(collection(db, "ingredients"), {
-      ...payload,
-      createdAt: serverTimestamp()
-    });
-  }
-
-  navigate("/ingredients");
-}
-
 
   function update(path, value) {
-    setForm(prev => {
+    setForm((prev) => {
       const copy = structuredClone(prev);
       let ref = copy;
       for (let i = 0; i < path.length - 1; i++) {
@@ -99,7 +115,6 @@ async function handleSave() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
       {/* LEFT – BASIC INFO */}
       <div className="bg-white border rounded-xl p-6 space-y-5">
         <h2 className="text-lg font-semibold text-slate-800">
@@ -111,7 +126,7 @@ async function handleSave() {
           <input
             className="input w-full"
             value={form.name}
-            onChange={e => update(["name"], e.target.value)}
+            onChange={(e) => update(["name"], e.target.value)}
           />
         </div>
 
@@ -120,11 +135,13 @@ async function handleSave() {
           <select
             className="input w-full"
             value={form.familyId}
-            onChange={e => update(["familyId"], e.target.value)}
+            onChange={(e) => update(["familyId"], e.target.value)}
           >
             <option value="">Select family…</option>
-            {families.map(f => (
-              <option key={f.id} value={f.id}>{f.name}</option>
+            {families.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
             ))}
           </select>
         </div>
@@ -134,7 +151,7 @@ async function handleSave() {
           <select
             className="input w-full"
             value={form.rarity}
-            onChange={e => update(["rarity"], e.target.value)}
+            onChange={(e) => update(["rarity"], e.target.value)}
           >
             <option value="common">Common</option>
             <option value="uncommon">Uncommon</option>
@@ -149,7 +166,7 @@ async function handleSave() {
             className="input w-full"
             placeholder="/images/ingredients/ironroot.png"
             value={form.imagePath}
-            onChange={e => update(["imagePath"], e.target.value)}
+            onChange={(e) => update(["imagePath"], e.target.value)}
           />
         </div>
       </div>
@@ -167,7 +184,7 @@ async function handleSave() {
               type="number"
               className="input w-full"
               value={form.physical.moisture}
-              onChange={e => update(["physical","moisture"], e.target.value)}
+              onChange={(e) => update(["physical", "moisture"], e.target.value)}
             />
           </div>
 
@@ -176,7 +193,7 @@ async function handleSave() {
             <select
               className="input w-full"
               value={form.physical.density}
-              onChange={e => update(["physical","density"], e.target.value)}
+              onChange={(e) => update(["physical", "density"], e.target.value)}
             >
               <option value="">—</option>
               <option value="low">Low</option>
@@ -191,18 +208,20 @@ async function handleSave() {
               type="number"
               className="input w-full"
               value={form.physical.stability}
-              onChange={e => update(["physical","stability"], e.target.value)}
+              onChange={(e) => update(["physical", "stability"], e.target.value)}
             />
           </div>
 
-          <div className="flex items-center gap-2 mt-6">
-            <input
-              type="checkbox"
-              checked={form.physical.organic}
-              onChange={e => update(["physical","organic"], e.target.checked)}
-            />
-            <span className="text-sm text-slate-600">Organic</span>
-          </div>
+        <div className="flex items-center gap-2 mt-6">
+  <input
+    type="checkbox"
+    className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/20"
+    checked={form.physical.organic}
+    onChange={(e) => update(["physical", "organic"], e.target.checked)}
+  />
+  <span className="text-sm text-slate-700">Organic</span>
+</div>
+
         </div>
       </div>
 
@@ -218,7 +237,7 @@ async function handleSave() {
             type="number"
             className="input w-full"
             value={form.gameplay.value}
-            onChange={e => update(["gameplay","value"], e.target.value)}
+            onChange={(e) => update(["gameplay", "value"], e.target.value)}
           />
         </div>
 
@@ -228,7 +247,7 @@ async function handleSave() {
             type="number"
             className="input w-full"
             value={form.gameplay.toxicity}
-            onChange={e => update(["gameplay","toxicity"], e.target.value)}
+            onChange={(e) => update(["gameplay", "toxicity"], e.target.value)}
           />
         </div>
 
@@ -238,36 +257,45 @@ async function handleSave() {
             type="number"
             className="input w-full"
             value={form.gameplay.volatility}
-            onChange={e => update(["gameplay","volatility"], e.target.value)}
+            onChange={(e) => update(["gameplay", "volatility"], e.target.value)}
           />
         </div>
       </div>
 
       {/* DESCRIPTION */}
       <div className="lg:col-span-3 bg-white border rounded-xl p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-slate-800">
-          Description
-        </h2>
+        <h2 className="text-lg font-semibold text-slate-800">Description</h2>
         <textarea
           className="input w-full h-32"
           value={form.description}
-          onChange={e => update(["description"], e.target.value)}
+          onChange={(e) => update(["description"], e.target.value)}
         />
       </div>
 
       {/* ACTIONS */}
       <div className="lg:col-span-3 flex justify-end gap-3">
-        <button className="btn-secondary">Cancel</button>
-      <button
-  onClick={handleSave}
-  disabled={saving}
-  className={`btn-primary ${saving ? "opacity-60 cursor-not-allowed" : ""}`}
->
-  {saving ? "Saving..." : "Save Ingredient"}
-</button>
+        <button
+          onClick={() => navigate("/ingredients")}
+          disabled={saving}
+          className={
+            "px-4 py-2 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 active:translate-y-px transition " +
+            (saving ? "opacity-60" : "")
+          }
+        >
+          Cancel
+        </button>
 
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className={
+            "px-4 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-800 active:translate-y-px transition " +
+            (saving ? "opacity-60" : "")
+          }
+        >
+          {saving ? "Saving..." : "Save Ingredient"}
+        </button>
       </div>
-
     </div>
   );
 }

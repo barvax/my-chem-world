@@ -1,26 +1,35 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import IngredientFamiliesOverview from "./IngredientFamiliesOverview";
-import IngredientFamilyEditor from "./IngredientFamilyEditor";
 import IngredientFamiliesDocs from "./IngredientFamiliesDocs";
 
 const tabs = [
   { key: "overview", label: "Overview" },
-  { key: "editor", label: "Create / Edit" },
   { key: "docs", label: "Documentation" }
 ];
 
 export default function IngredientFamiliesPage() {
   const [activeTab, setActiveTab] = useState("overview");
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-slate-800">
-          Ingredient Families
-        </h1>
-        <p className="text-sm text-slate-500">
-          Define high-level ingredient categories
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-800">
+            Ingredient Families
+          </h1>
+          <p className="text-sm text-slate-500">
+            Define high-level ingredient categories
+          </p>
+        </div>
+
+        <button
+          onClick={() => navigate("/ingredient-families/new")}
+          className="px-4 py-2 rounded-md bg-slate-900 text-white"
+        >
+          + New Family
+        </button>
       </div>
 
       {/* Tabs */}
@@ -45,7 +54,6 @@ export default function IngredientFamiliesPage() {
 
       {/* Content */}
       {activeTab === "overview" && <IngredientFamiliesOverview />}
-      {activeTab === "editor" && <IngredientFamilyEditor />}
       {activeTab === "docs" && <IngredientFamiliesDocs />}
     </div>
   );
