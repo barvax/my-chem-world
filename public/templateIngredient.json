@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Iron Root",
+    "familyWorldId": "roots",
+    "rarity": "common",
+    "description": "A dense subterranean root rich in minerals.",
+
+    "physical": {
+      "moisture": 18,
+      "density": "high",
+      "stability": 75,
+      "organic": true
+    },
+
+    "gameplay": {
+      "value": 12,
+      "toxicity": 5,
+      "volatility": 10
+    },
+
+    "imagePath": "/images/ingredients/roots/ironroot.png"
+  }
+]
