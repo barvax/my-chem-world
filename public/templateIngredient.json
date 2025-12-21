@@ -1,23 +1,23 @@
 [
   {
-    "name": "Iron minerals",
-    "familyWorldId": "minerals",
+    "name": "Ron",
+    "familyWorldId": "animal",
     "rarity": "common",
-    "description": "A dense subterranean root rich in minerals.",
+    "imagePath": "/images/ingredients/spider-fang.png",
+    "description": "A sharp fang taken from a cave spider. Used in venom recipes.",
 
     "physical": {
-      "moisture": 18,
-      "density": "high",
-      "stability": 75,
+      "moisture": 23,
+      "density": "medium",
+      "stability": 33,
       "organic": true
     },
 
     "gameplay": {
-      "value": 12,
-      "toxicity": 5,
-      "volatility": 10
-    },
-
-    "imagePath": "/images/ingredients/roots/ironroot.png"
+      "value": 54,
+      "toxicity": 45,
+      "volatility": 77
+    }
   }
+
 ]
