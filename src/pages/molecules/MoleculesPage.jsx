@@ -11,8 +11,13 @@ const tabs = [
 
 export default function MoleculesPage() {
   const [activeTab, setActiveTab] = useState("overview");
-  const [reloadKey, setReloadKey] = useState(0); // ✅ NEW
+  const [reloadKey, setReloadKey] = useState(0);
   const navigate = useNavigate();
+
+  function goToOverviewAndRefresh() {
+    setReloadKey((k) => k + 1);
+    setActiveTab("overview");
+  }
 
   async function handleImport(e) {
     const file = e.target.files?.[0];
@@ -21,10 +26,7 @@ export default function MoleculesPage() {
     try {
       const count = await importMoleculesFromFile(file);
       alert(`Imported ${count} molecules successfully`);
-
-      // ✅ Refresh overview list automatically
-      setReloadKey((k) => k + 1);
-      setActiveTab("overview");
+      goToOverviewAndRefresh();
     } catch (err) {
       console.error(err);
       alert("Failed to import molecules");
@@ -44,7 +46,7 @@ export default function MoleculesPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* IMPORT */}
+          {/* IMPORT FILE */}
           <label className="px-4 py-2 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 active:translate-y-px transition cursor-pointer">
             📥 Import JSON
             <input
@@ -82,9 +84,8 @@ export default function MoleculesPage() {
         ))}
       </div>
 
-      {/* ✅ key forces remount -> reload list */}
       {activeTab === "overview" && <MoleculesOverview key={reloadKey} />}
-      {activeTab === "docs" && <MoleculesDocs />}
+      {activeTab === "docs" && <MoleculesDocs onDone={goToOverviewAndRefresh} />}
     </div>
   );
 }
