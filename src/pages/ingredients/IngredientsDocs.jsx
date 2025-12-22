@@ -1,4 +1,63 @@
-export default function IngredientsDocs() {
+import React, { useMemo, useState } from "react";
+import { Copy, Check, Wand2 } from "lucide-react";
+import { importIngredientsFromText } from "../../utils/importIngredientsFromText";
+
+export default function IngredientsDocs({ onDone }) {
+  const [copied, setCopied] = useState(false);
+  const [pasteText, setPasteText] = useState("");
+
+  const JSON_TEMPLATE = useMemo(
+    () => `[
+  {
+    "worldId": "ron",
+    "name": "ron",
+    "familyWorldId": "animal",
+    "rarity": "common",
+    "imagePath": "/images/ingredients/spider-fang.png",
+    "description": "A sharp fang taken from a cave spider.",
+
+    "physical": {
+      "state": "solid",
+      "stability": 33,
+      "organic": true
+    },
+
+    "gameplay": {
+      "value": 54,
+      "toxicity": 45,
+      "volatility": 77
+    },
+
+    "molecules": []
+  }
+]`,
+    []
+  );
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(JSON_TEMPLATE);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1200);
+    } catch (e) {
+      console.error(e);
+      alert("Copy failed (browser permissions).");
+    }
+  }
+
+  async function handleCreateFromJson() {
+    try {
+      const count = await importIngredientsFromText(pasteText);
+      alert(`Created/Updated ${count} ingredients`);
+
+      // ✅ go to overview + refresh (handled by IngredientsPage)
+      if (onDone) onDone();
+    } catch (e) {
+      console.error(e);
+      alert(e?.message || "Failed to create from JSON");
+    }
+  }
+
   return (
     <div className="max-w-3xl space-y-8">
       <section>
@@ -49,13 +108,8 @@ export default function IngredientsDocs() {
         </h3>
 
         <DocItem
-          title="physical.moisture"
-          description="Water content (%)."
-        />
-
-        <DocItem
-          title="physical.density"
-          description="low / medium / high."
+          title="physical.state"
+          description="State of matter: solid / liquid / gas."
         />
 
         <DocItem
@@ -77,37 +131,22 @@ export default function IngredientsDocs() {
 
         <DocItem title="gameplay.value" description="Economic value." />
         <DocItem title="gameplay.toxicity" description="Harmfulness level." />
-        <DocItem title="gameplay.volatility" description="Reactivity/instability." />
+        <DocItem
+          title="gameplay.volatility"
+          description="Reactivity/instability."
+        />
       </section>
 
       {/* MOLECULES */}
       <section className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-700">
-          Molecules (optional)
+          Molecules (manual only)
         </h3>
 
         <DocItem
           title="molecules"
-          description="Optional array of molecules found in this ingredient (can be empty or omitted)."
+          description="Always an empty array on import. Molecules are added manually in the Ingredient Editor UI."
         />
-
-        <DocItem
-          title="molecules[].moleculeWorldId / moleculeName"
-          description="Reference to the molecule. For now you can use moleculeWorldId (recommended) and/or moleculeName until the Molecules object exists."
-        />
-
-        <DocItem
-          title="molecules[].minWtPercent / maxWtPercent"
-          description="Weight-percent range of this molecule in the ingredient (e.g. 10–13)."
-        />
-
-        <div className="bg-white border rounded-lg p-4">
-          <h4 className="font-medium text-slate-800">Rule</h4>
-          <p className="text-sm text-slate-600 mt-1">
-            For each ingredient: <b>sum of all molecules maxWtPercent must be ≤ 100</b>.
-            No need to reach 100 — it’s ok to be lower.
-          </p>
-        </div>
       </section>
 
       {/* JSON TEMPLATE */}
@@ -116,68 +155,64 @@ export default function IngredientsDocs() {
 
         <div className="bg-white border rounded-lg p-4 space-y-2">
           <p className="text-sm text-slate-600">
-            Import file must be an <b>array</b>. Minimum required per item:{" "}
-            <b>worldId</b>, <b>name</b>, <b>familyWorldId</b>.
+            Import text must be a JSON <b>array</b> or a single <b>object</b>.
+            Minimum required per item: <b>worldId</b>, <b>name</b>,{" "}
+            <b>familyWorldId</b>.
           </p>
           <p className="text-sm text-slate-600">
-            <b>molecules</b> is optional. Rule enforced on import:{" "}
-            <b>Σ(maxWtPercent) ≤ 100</b>.
+            <b>molecules</b> is forced to <b>[]</b> on import (manual only in UI).
           </p>
         </div>
 
-        <pre className="bg-slate-900 text-slate-100 rounded-lg p-4 text-xs overflow-auto border border-slate-800">
-          <code>{`[
-  {
-    "worldId": "ing_spider_fang",
-    "name": "Spider Fang",
-    "familyWorldId": "family_animal_derived",
-    "rarity": "common",
-    "imagePath": "/images/ingredients/spider-fang.png",
-    "description": "A sharp fang taken from a cave spider.",
+        <div className="relative">
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="absolute top-2 right-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-800/80 text-slate-100 hover:bg-slate-700 active:translate-y-px transition cursor-pointer"
+            title="Copy JSON"
+          >
+            {copied ? <Check size={16} /> : <Copy size={16} />}
+            <span className="text-xs font-semibold">
+              {copied ? "Copied" : "Copy"}
+            </span>
+          </button>
 
-    "physical": {
-      "moisture": 23,
-      "density": "medium",
-      "stability": 33,
-      "organic": true
-    },
+          <pre className="bg-slate-900 text-slate-100 rounded-lg p-4 text-xs overflow-auto border border-slate-800">
+            <code>{JSON_TEMPLATE}</code>
+          </pre>
+        </div>
+      </section>
 
-    "gameplay": {
-      "value": 54,
-      "toxicity": 45,
-      "volatility": 77
-    },
+      {/* ✅ PASTE JSON -> CREATE (moved OUTSIDE the <pre>) */}
+      <section className="space-y-4">
+        <h3 className="text-lg font-semibold text-slate-700">
+          Paste JSON → Create / Update
+        </h3>
 
-    "molecules": [
-      { "moleculeWorldId": "mol_sugar", "moleculeName": "Sugar", "minWtPercent": 0, "maxWtPercent": 2 },
-      { "moleculeWorldId": "mol_venom_x", "moleculeName": "Venom-X", "minWtPercent": 10, "maxWtPercent": 13 }
-    ]
-  },
-  {
-    "worldId": "ing_ironroot",
-    "name": "Ironroot",
-    "familyWorldId": "family_roots",
-    "rarity": "uncommon",
-    "imagePath": "/images/ingredients/ironroot.png",
-    "description": "Dense root with metallic fibers.",
+        <div className="bg-white border rounded-lg p-4 space-y-3">
+          <p className="text-sm text-slate-600">
+            Paste JSON here (array or single object) and click Create. Upsert by{" "}
+            <b>worldId</b>. Molecules will be forced to <b>[]</b>.
+          </p>
 
-    "physical": {
-      "moisture": 12,
-      "density": "high",
-      "stability": 65,
-      "organic": true
-    },
+          <textarea
+            className="input w-full h-44 font-mono text-xs"
+            placeholder="Paste JSON here..."
+            value={pasteText}
+            onChange={(e) => setPasteText(e.target.value)}
+          />
 
-    "gameplay": {
-      "value": 120,
-      "toxicity": 10,
-      "volatility": 20
-    },
-
-    "molecules": []
-  }
-]`}</code>
-        </pre>
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={handleCreateFromJson}
+              className="px-4 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-800 active:translate-y-px transition inline-flex items-center gap-2"
+            >
+              <Wand2 size={16} />
+              Create from JSON
+            </button>
+          </div>
+        </div>
       </section>
     </div>
   );

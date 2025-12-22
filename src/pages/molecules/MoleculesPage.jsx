@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MoleculesOverview from "./MoleculesOverview";
 import MoleculesDocs from "./MoleculesDocs";
+import { importMoleculesFromFile } from "../../utils/importMoleculesFromFile";
 
 const tabs = [
   { key: "overview", label: "Overview" },
@@ -10,11 +11,31 @@ const tabs = [
 
 export default function MoleculesPage() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [reloadKey, setReloadKey] = useState(0); // ✅ NEW
   const navigate = useNavigate();
+
+  async function handleImport(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const count = await importMoleculesFromFile(file);
+      alert(`Imported ${count} molecules successfully`);
+
+      // ✅ Refresh overview list automatically
+      setReloadKey((k) => k + 1);
+      setActiveTab("overview");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to import molecules");
+    }
+
+    e.target.value = "";
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Molecules</h1>
           <p className="text-sm text-slate-500">
@@ -22,12 +43,26 @@ export default function MoleculesPage() {
           </p>
         </div>
 
-        <button
-          onClick={() => navigate("/molecules/new")}
-          className="px-4 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-800 active:translate-y-px transition"
-        >
-          + New Molecule
-        </button>
+        <div className="flex items-center gap-3">
+          {/* IMPORT */}
+          <label className="px-4 py-2 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 active:translate-y-px transition cursor-pointer">
+            📥 Import JSON
+            <input
+              type="file"
+              accept="application/json"
+              className="hidden"
+              onChange={handleImport}
+            />
+          </label>
+
+          {/* NEW */}
+          <button
+            onClick={() => navigate("/molecules/new")}
+            className="px-4 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-800 active:translate-y-px transition"
+          >
+            + New Molecule
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-2 border-b">
@@ -47,7 +82,8 @@ export default function MoleculesPage() {
         ))}
       </div>
 
-      {activeTab === "overview" && <MoleculesOverview />}
+      {/* ✅ key forces remount -> reload list */}
+      {activeTab === "overview" && <MoleculesOverview key={reloadKey} />}
       {activeTab === "docs" && <MoleculesDocs />}
     </div>
   );

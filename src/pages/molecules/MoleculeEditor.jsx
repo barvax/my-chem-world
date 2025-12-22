@@ -35,6 +35,9 @@ export default function MoleculeEditor() {
     ionicType: "neutral",
     stability: "",
     reactivity: "",
+smell: "",
+color: "",
+taste: "",
 
     rarity: "common",
     known: false,
@@ -76,6 +79,9 @@ export default function MoleculeEditor() {
           ionicType: data.ionicType || "neutral",
           stability: data.stability ?? "",
           reactivity: data.reactivity ?? "",
+smell: data.smell || "",
+color: data.color || "",
+taste: data.taste || "",
 
           rarity: data.rarity || "common",
           known: Boolean(data.known),
@@ -161,6 +167,9 @@ export default function MoleculeEditor() {
       ionicType: form.ionicType || "neutral",
       stability: numOrEmpty(form.stability),
       reactivity: numOrEmpty(form.reactivity),
+smell: form.smell || "",
+color: form.color || "",
+taste: form.taste || "",
 
       rarity: form.rarity || "common",
       known: Boolean(form.known),
@@ -418,6 +427,37 @@ export default function MoleculeEditor() {
               <div className="text-xs text-slate-400 italic">No functional groups</div>
             )}
           </div>
+<div className="grid grid-cols-1 gap-4">
+  <div>
+    <label className="label">Smell</label>
+    <input
+      className="input"
+      value={form.smell}
+      onChange={(e) => set("smell", e.target.value)}
+      placeholder="Free text..."
+    />
+  </div>
+
+  <div>
+    <label className="label">Color</label>
+    <input
+      className="input"
+      value={form.color}
+      onChange={(e) => set("color", e.target.value)}
+      placeholder="Free text..."
+    />
+  </div>
+
+  <div>
+    <label className="label">Taste</label>
+    <input
+      className="input"
+      value={form.taste}
+      onChange={(e) => set("taste", e.target.value)}
+      placeholder="Free text..."
+    />
+  </div>
+</div>
 
           <div>
             <label className="label">Description</label>

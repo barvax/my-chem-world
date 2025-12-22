@@ -11,22 +11,28 @@ const tabs = [
 
 export default function IngredientsPage() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [reloadKey, setReloadKey] = useState(0); // ✅ NEW
   const navigate = useNavigate();
 
-  async function handleImport(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+ async function handleImport(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    try {
-      const count = await importIngredientsFromFile(file);
-      alert(`Imported ${count} ingredients successfully`);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to import ingredients");
-    }
+  try {
+    const count = await importIngredientsFromFile(file);
+    alert(`Imported ${count} ingredients successfully`);
 
-    e.target.value = "";
+    // ✅ go to overview + refresh
+    setReloadKey((k) => k + 1);
+    setActiveTab("overview");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to import ingredients");
   }
+
+  e.target.value = "";
+}
+
 
   return (
     <div className="space-y-6">
@@ -80,8 +86,16 @@ export default function IngredientsPage() {
       </div>
 
       {/* Content */}
-      {activeTab === "overview" && <IngredientsOverview />}
-      {activeTab === "docs" && <IngredientsDocs />}
+      {activeTab === "overview" && <IngredientsOverview key={reloadKey} />}
+    {activeTab === "docs" && (
+  <IngredientsDocs
+    onDone={() => {
+      setReloadKey((k) => k + 1);
+      setActiveTab("overview");
+    }}
+  />
+)}
+
     </div>
   );
 }

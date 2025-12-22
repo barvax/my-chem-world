@@ -1,0 +1,27 @@
+[{
+  "worldId": "molecule_glow_alkaloid",
+  "name": "Glow Alkaloid",
+  "actualMoleculeName": "Psilocybin",
+  "description": "",
+
+  "imageUrl": "",
+
+  "molarMass": 284,
+  "meltingPoint": 220,
+  "boilingPoint": 523,
+
+  "polarityAffinity": 80,
+  "hydrogenBonding": 70,
+  "ionicType": "neutral",
+  "stability": 40,
+  "reactivity": 60,
+
+  "rarity": "rare",
+  "known": false,
+
+  "functionalGroups": ["indole", "amine", "hydroxyl"],
+
+  "smell": "earthy",
+  "color": "off-white crystals",
+  "taste": "bitter"
+}]

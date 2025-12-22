@@ -1,15 +1,14 @@
 [
   {
-   "worldId": "ing_spider_fang1",
+    "worldId": "ron1",
     "name": "ron",
     "familyWorldId": "animal",
     "rarity": "common",
     "imagePath": "/images/ingredients/spider-fang.png",
-    "description": "A sharp fang taken from a cave spider. Used in venom recipes.",
+    "description": "A sharp fang taken from a cave spider.",
 
     "physical": {
-      "moisture": 23,
-      "density": "medium",
+      "state": "solid",
       "stability": 33,
       "organic": true
     },
@@ -18,7 +17,21 @@
       "value": 54,
       "toxicity": 45,
       "volatility": 77
-    }
-  }
+    },
 
+    "molecules": [
+      {
+        "moleculeWorldId": "molecule_sugar",
+        "moleculeName": "Sugar",
+        "minWtPercent": 0,
+        "maxWtPercent": 2
+      },
+      {
+        "moleculeWorldId": "molecule_venom_x",
+        "moleculeName": "Venom-X",
+        "minWtPercent": 10,
+        "maxWtPercent": 13
+      }
+    ]
+  }
 ]

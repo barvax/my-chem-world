@@ -13,6 +13,8 @@ import {
   serverTimestamp
 } from "firebase/firestore";
 
+const STATE_OPTIONS = ["solid", "liquid", "gas"];
+
 function numOrNull(v) {
   if (v === "" || v === null || v === undefined) return null;
   const n = Number(v);
@@ -36,8 +38,7 @@ export default function IngredientEditor() {
     description: "",
 
     physical: {
-      moisture: "",
-      density: "",
+      state: "solid",     // ✅ NEW
       stability: "",
       organic: false
     },
@@ -50,7 +51,6 @@ export default function IngredientEditor() {
 
     imagePath: "",
 
-    // ✅ NEW: molecules composition (optional)
     molecules: [] // [{ moleculeWorldId, minWtPercent, maxWtPercent }]
   });
 
@@ -73,7 +73,14 @@ export default function IngredientEditor() {
       setForm((prev) => ({
         ...prev,
         ...data,
-        physical: { ...prev.physical, ...(data.physical || {}) },
+        physical: {
+          ...prev.physical,
+          ...(data.physical || {}),
+          // Backward compatibility: if old fields exist we ignore them in UI
+          state: (data.physical?.state && STATE_OPTIONS.includes(data.physical.state))
+            ? data.physical.state
+            : (prev.physical.state || "solid")
+        },
         gameplay: { ...prev.gameplay, ...(data.gameplay || {}) },
         molecules: Array.isArray(data.molecules) ? data.molecules : []
       }));
@@ -88,10 +95,8 @@ export default function IngredientEditor() {
       const fams = await getIngredientFamilies();
       setFamilies(fams);
 
-      // molecules collection (for dropdown)
       try {
         const mols = await getMolecules();
-        // prefer worldId sorting
         mols.sort((a, b) =>
           String(a.worldId || a.name || "").localeCompare(String(b.worldId || b.name || ""))
         );
@@ -104,20 +109,17 @@ export default function IngredientEditor() {
     load();
   }, []);
 
-  // Helper: update nested paths
   function update(path, value) {
     setForm((prev) => {
       const copy = structuredClone(prev);
       let ref = copy;
-      for (let i = 0; i < path.length - 1; i++) {
-        ref = ref[path[i]];
-      }
+      for (let i = 0; i < path.length - 1; i++) ref = ref[path[i]];
       ref[path[path.length - 1]] = value;
       return copy;
     });
   }
 
-  // Molecules UI helpers
+  // Molecules helpers
   function addMoleculeRow() {
     setForm((prev) => ({
       ...prev,
@@ -147,7 +149,6 @@ export default function IngredientEditor() {
   const sumMax = useMemo(() => {
     const rows = Array.isArray(form.molecules) ? form.molecules : [];
     let total = 0;
-
     for (const r of rows) {
       if (!r?.moleculeWorldId) continue;
       const max = numOrNull(r.maxWtPercent);
@@ -161,6 +162,11 @@ export default function IngredientEditor() {
 
     if (!form.worldId || !form.name || !form.familyId) {
       alert("World ID, Name and Family are required");
+      return;
+    }
+
+    if (form.physical?.state && !STATE_OPTIONS.includes(form.physical.state)) {
+      alert("Invalid state of matter");
       return;
     }
 
@@ -179,8 +185,6 @@ export default function IngredientEditor() {
 
     for (const r of rawRows) {
       const moleculeWorldId = String(r?.moleculeWorldId || "").trim();
-
-      // allow empty rows (ignore)
       if (!moleculeWorldId) continue;
 
       if (seen.has(moleculeWorldId)) {
@@ -196,13 +200,7 @@ export default function IngredientEditor() {
         alert(`Invalid min/max for molecule: ${moleculeWorldId}`);
         return;
       }
-      if (
-        minN < 0 ||
-        maxN < 0 ||
-        minN > 100 ||
-        maxN > 100 ||
-        minN > maxN
-      ) {
+      if (minN < 0 || maxN < 0 || minN > 100 || maxN > 100 || minN > maxN) {
         alert(`Range error for molecule ${moleculeWorldId} (min must be <= max, 0–100).`);
         return;
       }
@@ -216,7 +214,6 @@ export default function IngredientEditor() {
       });
     }
 
-    // Rule: SUM(max) <= 100
     if (sumMaxLocal > 100.0001) {
       alert(`Sum of MAX concentration exceeds 100% (current: ${sumMaxLocal}%).`);
       return;
@@ -224,10 +221,16 @@ export default function IngredientEditor() {
 
     setSaving(true);
 
+    // ✅ Keep only the fields we use (drop old moisture/density if exist in DB)
     const payload = {
       ...form,
       familyWorldId,
       molecules: cleaned,
+      physical: {
+        state: form.physical?.state || "solid",
+        stability: form.physical?.stability ?? "",
+        organic: Boolean(form.physical?.organic)
+      },
       updatedAt: serverTimestamp()
     };
 
@@ -322,27 +325,19 @@ export default function IngredientEditor() {
         <h2 className="text-lg font-semibold text-slate-800">Physical Properties</h2>
 
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="label">Moisture (%)</label>
-            <input
-              type="number"
-              className="input w-full"
-              value={form.physical.moisture}
-              onChange={(e) => update(["physical", "moisture"], e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="label">Density</label>
+          {/* ✅ NEW: State of matter */}
+          <div className="col-span-2">
+            <label className="label">State of Matter</label>
             <select
               className="input w-full bg-white"
-              value={form.physical.density}
-              onChange={(e) => update(["physical", "density"], e.target.value)}
+              value={form.physical.state || "solid"}
+              onChange={(e) => update(["physical", "state"], e.target.value)}
             >
-              <option value="">—</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
+              {STATE_OPTIONS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -403,7 +398,7 @@ export default function IngredientEditor() {
         </div>
       </div>
 
-      {/* ✅ MOLECULES */}
+      {/* MOLECULES */}
       <div className="lg:col-span-3 bg-white border rounded-xl p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
@@ -422,11 +417,7 @@ export default function IngredientEditor() {
           </button>
         </div>
 
-        <div
-          className={`text-sm font-medium ${
-            sumMax > 100 ? "text-red-600" : "text-slate-600"
-          }`}
-        >
+        <div className={`text-sm font-medium ${sumMax > 100 ? "text-red-600" : "text-slate-600"}`}>
           Sum of MAX: {Number.isFinite(sumMax) ? sumMax : 0}% (must be ≤ 100%)
         </div>
 
@@ -455,9 +446,7 @@ export default function IngredientEditor() {
                       <select
                         className="input bg-white"
                         value={row.moleculeWorldId || ""}
-                        onChange={(e) =>
-                          updateMoleculeRow(idx, "moleculeWorldId", e.target.value)
-                        }
+                        onChange={(e) => updateMoleculeRow(idx, "moleculeWorldId", e.target.value)}
                       >
                         <option value="">Select molecule…</option>
                         {moleculesCatalog.map((m) => (
@@ -473,10 +462,7 @@ export default function IngredientEditor() {
                         type="number"
                         className="input"
                         value={row.minWtPercent ?? ""}
-                        onChange={(e) =>
-                          updateMoleculeRow(idx, "minWtPercent", e.target.value)
-                        }
-                        placeholder="0"
+                        onChange={(e) => updateMoleculeRow(idx, "minWtPercent", e.target.value)}
                       />
                     </td>
 
@@ -485,10 +471,7 @@ export default function IngredientEditor() {
                         type="number"
                         className="input"
                         value={row.maxWtPercent ?? ""}
-                        onChange={(e) =>
-                          updateMoleculeRow(idx, "maxWtPercent", e.target.value)
-                        }
-                        placeholder="0"
+                        onChange={(e) => updateMoleculeRow(idx, "maxWtPercent", e.target.value)}
                       />
                     </td>
 
