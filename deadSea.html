@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dead Sea Salt — Mineral-Rich Bath & Body Care</title>
+  <meta name="description" content="Premium Dead Sea salt harvested from the lowest place on Earth. Mineral-rich, clean, and ideal for bath rituals and body care." />
+  <style>
+    :root{
+      --bg:#070a12;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --line: rgba(255,255,255,.14);
+      --accent:#67e8f9;
+      --accent2:#a78bfa;
+      --good:#34d399;
+      --warn:#fbbf24;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(103,232,249,.14), transparent 60%),
+        radial-gradient(900px 600px at 80% 20%, rgba(167,139,250,.16), transparent 55%),
+        radial-gradient(900px 700px at 60% 90%, rgba(52,211,153,.08), transparent 55%),
+        linear-gradient(180deg, #05070d, #070a12 45%, #05070d);
+      overflow-x:hidden;
+    }
+    a{color:inherit}
+    .wrap{max-width:1100px; margin:0 auto; padding:24px}
+    .nav{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(7,10,18,.78), rgba(7,10,18,.35));
+      border-bottom:1px solid var(--line);
+    }
+    .nav-inner{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px; padding:14px 24px; max-width:1100px; margin:0 auto;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.2px;
+    }
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background:
+        radial-gradient(12px 12px at 30% 35%, rgba(255,255,255,.9), rgba(255,255,255,.0) 60%),
+        linear-gradient(135deg, rgba(103,232,249,.95), rgba(167,139,250,.95));
+      box-shadow: 0 10px 30px rgba(103,232,249,.18);
+      border:1px solid rgba(255,255,255,.18);
+    }
+    .nav-links{display:flex; gap:16px; flex-wrap:wrap}
+    .nav-links a{
+      text-decoration:none; color:var(--muted);
+      padding:8px 10px; border-radius:12px;
+      border:1px solid transparent;
+    }
+    .nav-links a:hover{
+      color:var(--text);
+      border-color: rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+    }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:10px 14px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:600;
+      box-shadow: 0 10px 30px rgba(0,0,0,.22);
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      cursor:pointer;
+      user-select:none;
+    }
+    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.22)}
+    .btn.primary{
+      border-color: rgba(103,232,249,.35);
+      background: linear-gradient(135deg, rgba(103,232,249,.22), rgba(167,139,250,.18));
+    }
+    .btn.primary:hover{border-color: rgba(103,232,249,.55)}
+    .hero{
+      padding:64px 0 28px;
+      display:grid; grid-template-columns: 1.1fr .9fr; gap:28px;
+      align-items:stretch;
+    }
+    .hero h1{
+      margin:0 0 14px;
+      font-size: clamp(34px, 4vw, 54px);
+      line-height:1.05;
+      letter-spacing:-.5px;
+    }
+    .hero p{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size: clamp(16px, 1.4vw, 18px);
+      line-height:1.6;
+      max-width: 62ch;
+    }
+    .pill-row{display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 20px}
+    .pill{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.78);
+      font-size:13px;
+    }
+    .pill svg{opacity:.9}
+    .hero-card{
+      border-radius: var(--radius);
+      background:
+        radial-gradient(420px 240px at 30% 25%, rgba(103,232,249,.16), transparent 70%),
+        radial-gradient(420px 260px at 70% 30%, rgba(167,139,250,.16), transparent 70%),
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: var(--shadow);
+      padding:18px;
+      position:relative;
+      overflow:hidden;
+      min-height: 320px;
+    }
+    .hero-card::before{
+      content:"";
+      position:absolute; inset:-80px;
+      background:
+        conic-gradient(from 210deg at 60% 40%,
+          rgba(103,232,249,.0),
+          rgba(103,232,249,.18),
+          rgba(167,139,250,.16),
+          rgba(52,211,153,.10),
+          rgba(103,232,249,.0));
+      filter: blur(24px);
+      opacity:.85;
+      transform: rotate(10deg);
+    }
+    .hero-card .inner{
+      position:relative;
+      display:flex; flex-direction:column; gap:10px;
+      height:100%;
+    }
+    .stat-grid{
+      display:grid; grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:auto;
+    }
+    .stat{
+      border-radius: 16px;
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.12);
+      padding:12px;
+    }
+    .stat b{display:block; font-size:16px}
+    .stat span{color:var(--muted); font-size:13px}
+    .kicker{
+      font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+      color: rgba(103,232,249,.9); font-size:12px;
+      margin-bottom:10px;
+    }
+    .section{padding:34px 0}
+    .section h2{
+      margin:0 0 12px;
+      font-size: clamp(22px, 2.4vw, 30px);
+      letter-spacing:-.2px;
+    }
+    .section p.lead{margin:0 0 18px; color:var(--muted); line-height:1.7; max-width: 80ch}
+    .grid3{display:grid; grid-template-columns: repeat(3, 1fr); gap:14px}
+    .card{
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
+      padding:16px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.25);
+    }
+    .card h3{margin:10px 0 8px; font-size:18px}
+    .card p{margin:0; color:var(--muted); line-height:1.65}
+    .icon{
+      width:42px; height:42px; border-radius:14px;
+      display:grid; place-items:center;
+      border:1px solid rgba(255,255,255,.16);
+      background: linear-gradient(135deg, rgba(103,232,249,.16), rgba(167,139,250,.12));
+    }
+    .split{
+      display:grid; grid-template-columns: 1fr 1fr; gap:14px;
+      align-items:start;
+    }
+    .timeline{
+      display:grid; gap:10px;
+    }
+    .item{
+      border-radius: 16px;
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      padding:12px 12px 12px 14px;
+      position:relative;
+    }
+    .item::before{
+      content:"";
+      position:absolute; left:10px; top:14px;
+      width:8px; height:8px; border-radius:99px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(103,232,249,.12);
+    }
+    .item b{display:block; margin-left:18px}
+    .item span{display:block; margin-left:18px; color:var(--muted); line-height:1.6; margin-top:4px; font-size:14px}
+    .quote{
+      padding:16px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .quote p{margin:0; color: rgba(255,255,255,.82); line-height:1.7}
+    .quote small{display:block; margin-top:10px; color:var(--muted)}
+    .buy{
+      display:grid; grid-template-columns: 1fr 1fr; gap:14px;
+      align-items:stretch;
+    }
+    form{
+      display:grid; gap:10px;
+      margin:0;
+    }
+    label{font-size:13px; color: rgba(255,255,255,.8)}
+    input, select, textarea{
+      width:100%;
+      padding:11px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+    }
+    input:focus, select:focus, textarea:focus{border-color: rgba(103,232,249,.55); box-shadow: 0 0 0 4px rgba(103,232,249,.12)}
+    .row2{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    .summary{
+      border-radius: var(--radius);
+      background:
+        radial-gradient(420px 220px at 20% 15%, rgba(52,211,153,.12), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.12);
+      padding:16px;
+      display:flex; flex-direction:column; gap:10px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.25);
+    }
+    .sumline{display:flex; justify-content:space-between; gap:12px; color:var(--muted)}
+    .sumline b{color:var(--text)}
+    .total{margin-top:auto; padding-top:10px; border-top:1px solid rgba(255,255,255,.12)}
+    .note{color:var(--muted); font-size:12px; line-height:1.6}
+    .footer{
+      padding:30px 0 40px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:13px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border-radius:999px;
+      border:1px solid rgba(52,211,153,.22);
+      background: rgba(52,211,153,.08);
+      color: rgba(255,255,255,.82);
+      font-size:13px;
+    }
+    .badge .dot{width:8px; height:8px; border-radius:99px; background: var(--good); box-shadow: 0 0 0 6px rgba(52,211,153,.10)}
+    .faq details{
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      padding:12px 12px;
+    }
+    .faq details + details{margin-top:10px}
+    .faq summary{cursor:pointer; font-weight:600}
+    .faq p{margin:10px 0 0; color:var(--muted); line-height:1.7}
+    .toast{
+      position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+      background: rgba(0,0,0,.7);
+      border: 1px solid rgba(255,255,255,.18);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      opacity:0; pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+      max-width:min(560px, 92vw);
+      font-size:14px;
+    }
+    .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px)}
+    @media (max-width: 900px){
+      .hero{grid-template-columns: 1fr; padding-top:44px}
+      .grid3{grid-template-columns: 1fr}
+      .split{grid-template-columns: 1fr}
+      .buy{grid-template-columns: 1fr}
+      .nav-inner{padding:12px 16px}
+      .wrap{padding:18px}
+    }
+  </style>
+</head>
+<body>
+  <header class="nav" role="banner">
+    <div class="nav-inner">
+      <div class="brand" aria-label="Brand">
+        <div class="logo" aria-hidden="true"></div>
+        <span>Dead Sea Salt Co.</span>
+      </div>
+
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#benefits">Benefits</a>
+        <a href="#lowest">Lowest Place</a>
+        <a href="#history">History</a>
+        <a href="#faq">FAQ</a>
+        <a class="btn primary" href="#buy">Buy Now</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- HERO -->
+    <section class="hero" aria-label="Hero">
+      <div>
+        <div class="kicker">Mineral-rich • Clean • Modern ritual</div>
+        <h1>Premium Dead Sea Salt from the lowest place on Earth.</h1>
+        <p>
+          Elevate your bath and body routine with naturally mineral-rich salt harvested from the shores of the Dead Sea.
+          Crisp crystals, spa-level feel—made for soaking, scrubs, and self-care.
+        </p>
+
+        <div class="pill-row" aria-label="Highlights">
+          <span class="pill">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2l3 7h7l-5.6 4.1L18.6 21 12 16.9 5.4 21l2.2-7.9L2 9h7l3-7z" stroke="currentColor" opacity=".9"/>
+            </svg>
+            Mineral-rich soak
+          </span>
+          <span class="pill">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 21s7-4.4 7-11a7 7 0 10-14 0c0 6.6 7 11 7 11z" stroke="currentColor" opacity=".9"/>
+              <path d="M12 12a2 2 0 100-4 2 2 0 000 4z" stroke="currentColor" opacity=".9"/>
+            </svg>
+            Sourced at sea level (and far below)
+          </span>
+          <span class="pill">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M20 7l-8 12-4-5" stroke="currentColor" stroke-width="1.5" opacity=".9"/>
+            </svg>
+            No artificial fragrance
+          </span>
+          <span class="pill">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 7h16M7 7V4h10v3M8 7l1 14h6l1-14" stroke="currentColor" opacity=".9"/>
+            </svg>
+            Resealable packaging
+          </span>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <a class="btn primary" href="#buy">Shop Dead Sea Salt</a>
+          <a class="btn" href="#benefits">Explore the Benefits</a>
+        </div>
+
+        <div style="margin-top:14px">
+          <span class="badge"><span class="dot" aria-hidden="true"></span> Ships in 1–2 business days</span>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-label="Product preview">
+        <div class="inner">
+          <div class="kicker" style="color:rgba(255,255,255,.85)">DEAD SEA CRYSTALS</div>
+          <p style="margin:0; color:rgba(255,255,255,.8); line-height:1.65">
+            Bright, clean crystals with a smooth dissolve—ideal for a relaxing soak or a simple body scrub.
+          </p>
+
+          <div class="stat-grid" aria-label="Quick facts">
+            <div class="stat">
+              <b>Natural origin</b>
+              <span>Harvested from the Dead Sea shoreline</span>
+            </div>
+            <div class="stat">
+              <b>Mineral profile</b>
+              <span>Known for magnesium & potassium content*</span>
+            </div>
+            <div class="stat">
+              <b>For bath & body</b>
+              <span>Soaks, scrubs, foot baths</span>
+            </div>
+            <div class="stat">
+              <b>Pure & simple</b>
+              <span>No added perfume or dye</span>
+            </div>
+          </div>
+
+          <p class="note" style="margin:0">
+            *Mineral composition varies naturally by harvest and processing.
+          </p>
+        </div>
+      </aside>
+    </section>
+
+    <!-- BENEFITS -->
+    <section id="benefits" class="section" aria-label="Benefits">
+      <h2>What makes Dead Sea salt special?</h2>
+      <p class="lead">
+        Dead Sea salt is celebrated for its naturally occurring minerals and its spa-like feel in water.
+        It’s a simple ingredient that turns an ordinary bath into a ritual.
+      </p>
+
+      <div class="grid3">
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M7 13c2.5 0 4-2 5-4 1 2 2.5 4 5 4 2.8 0 5-2.2 5-5 0-3-2.5-5-5.5-4.6C15.8 1.7 13.9 1 12 1S8.2 1.7 7.5 3.4C4.5 3 2 5 2 8c0 2.8 2.2 5 5 5z" stroke="currentColor" opacity=".95"/>
+              <path d="M7 21c1.5 0 2.5-1 3-2 0 1 1 2 2 2s2-1 2-2c.5 1 1.5 2 3 2" stroke="currentColor" opacity=".95"/>
+            </svg>
+          </div>
+          <h3>Effortless spa soak</h3>
+          <p>Add a scoop to warm water and let the crystals dissolve into a silky, mineral-rich bath experience.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2c3 3 6 6 6 10a6 6 0 11-12 0c0-4 3-7 6-10z" stroke="currentColor" opacity=".95"/>
+              <path d="M9.5 14.5c.6 1.6 2 2.6 3.8 2.6" stroke="currentColor" opacity=".95"/>
+            </svg>
+          </div>
+          <h3>Skin-friendly routine</h3>
+          <p>Commonly used in bath rituals and gentle scrubs. Always patch test and avoid broken skin.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M4 20V8l8-4 8 4v12" stroke="currentColor" opacity=".95"/>
+              <path d="M9 20v-6h6v6" stroke="currentColor" opacity=".95"/>
+            </svg>
+          </div>
+          <h3>Clean and simple</h3>
+          <p>Just salt crystals—no added fragrance, colorants, or fillers. A minimalist ingredient that works.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOWEST PLACE -->
+    <section id="lowest" class="section" aria-label="Lowest place on Earth">
+      <div class="split">
+        <div class="card">
+          <h2 style="margin-top:0">The Dead Sea: Earth’s lowest exposed point</h2>
+          <p class="lead" style="margin-bottom:0">
+            The Dead Sea sits at the lowest exposed land elevation on the planet—far below sea level.
+            The unique geography and evaporation-driven concentration contribute to its famous mineral content.
+          </p>
+          <div style="margin-top:14px; display:grid; gap:10px">
+            <div class="sumline"><span>Location</span> <b>Dead Sea Rift Valley</b></div>
+            <div class="sumline"><span>Known for</span> <b>High salinity & minerals</b></div>
+            <div class="sumline"><span>Ideal use</span> <b>Bath soaks & scrubs</b></div>
+          </div>
+          <p class="note" style="margin-top:12px">
+            Note: The exact elevation changes over time due to natural and human factors.
+          </p>
+        </div>
+
+        <div class="quote" aria-label="Brand message">
+          <p>
+            “A place unlike any other—intense sunlight, desert air, and a sea that concentrates minerals into shimmering crystals.
+            We bottle that feeling into your bath.”
+          </p>
+          <small>— Dead Sea Salt Co.</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="history" class="section" aria-label="History">
+      <h2>History & heritage around the Dead Sea</h2>
+      <p class="lead">
+        The Dead Sea region has been a crossroads of trade, culture, and ancient kingdoms for thousands of years.
+        Natural minerals, salts, and bitumen from the area were historically valued in commerce and daily life.
+      </p>
+
+      <div class="split">
+        <div class="timeline">
+          <div class="item">
+            <b>Ancient routes & trade</b>
+            <span>Caravans and settlements developed around water sources and trade corridors in the broader region.</span>
+          </div>
+          <div class="item">
+            <b>Classical-era references</b>
+            <span>Writers in antiquity noted the area’s unusual waters and materials, contributing to its enduring mystique.</span>
+          </div>
+          <div class="item">
+            <b>Modern wellness culture</b>
+            <span>Today, mineral bathing and spa traditions are globally popular, and the Dead Sea remains an iconic source.</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Our quality approach</h3>
+          <p>
+            We focus on clean handling and consistent crystal size for an easy dissolve and comfortable use.
+            Each batch is selected for clarity and packaged for freshness.
+          </p>
+          <ul style="margin:12px 0 0; padding-left:18px; color:var(--muted); line-height:1.8">
+            <li>Resealable, humidity-resistant pouch</li>
+            <li>Coarse crystals for baths, fine option for scrubs</li>
+            <li>Simple ingredient list: Dead Sea salt</li>
+          </ul>
+          <p class="note" style="margin-top:10px">
+            Cosmetic use only. Not intended to diagnose, treat, cure, or prevent any disease.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section" aria-label="FAQ">
+      <h2>FAQ</h2>
+      <p class="lead">Quick answers before you buy.</p>
+
+      <div class="faq">
+        <details>
+          <summary>How do I use it in a bath?</summary>
+          <p>
+            Add 1–2 cups to warm water, stir to dissolve, and soak for 15–20 minutes. Rinse after use and moisturize.
+            If you have sensitive skin, start with a smaller amount.
+          </p>
+        </details>
+        <details>
+          <summary>Can I use it as a body scrub?</summary>
+          <p>
+            Yes—mix a small amount with a carrier oil or gentle cleanser and massage lightly. Avoid broken or freshly shaved skin.
+          </p>
+        </details>
+        <details>
+          <summary>Is it food-grade?</summary>
+          <p>
+            This product is intended for bath & body use only, not for consumption.
+          </p>
+        </details>
+        <details>
+          <summary>Any precautions?</summary>
+          <p>
+            Avoid contact with eyes. Do not use on broken skin. Discontinue if irritation occurs.
+            If pregnant, nursing, or under medical care, consult a professional.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <!-- BUY / FORM -->
+    <section id="buy" class="section" aria-label="Purchase">
+      <h2>Purchase</h2>
+      <p class="lead">Choose your size and quantity. We’ll calculate the total instantly.</p>
+
+      <div class="buy">
+        <div class="card">
+          <h3 style="margin-top:0">Checkout</h3>
+
+          <form id="orderForm" novalidate>
+            <div class="row2">
+              <div>
+                <label for="size">Size</label>
+                <select id="size" name="size" required>
+                  <option value="500" selected>500g pouch</option>
+                  <option value="1000">1kg pouch</option>
+                  <option value="2500">2.5kg bag</option>
+                </select>
+              </div>
+              <div>
+                <label for="grind">Crystal type</label>
+                <select id="grind" name="grind" required>
+                  <option value="coarse" selected>Coarse (Bath)</option>
+                  <option value="fine">Fine (Scrub)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row2">
+              <div>
+                <label for="qty">Quantity</label>
+                <input id="qty" name="qty" type="number" min="1" value="1" required />
+              </div>
+              <div>
+                <label for="country">Shipping country</label>
+                <select id="country" name="country" required>
+                  <option value="IL" selected>Israel</option>
+                  <option value="EU">Europe</option>
+                  <option value="US">United States</option>
+                  <option value="WW">Worldwide</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label for="name">Full name</label>
+              <input id="name" name="name" type="text" autocomplete="name" required placeholder="Jane Doe" />
+            </div>
+
+            <div class="row2">
+              <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" autocomplete="email" required placeholder="jane@example.com" />
+              </div>
+              <div>
+                <label for="phone">Phone (optional)</label>
+                <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+972..." />
+              </div>
+            </div>
+
+            <div>
+              <label for="address">Shipping address</label>
+              <textarea id="address" name="address" rows="3" required placeholder="Street, number, city, postal code"></textarea>
+            </div>
+
+            <div class="row2">
+              <div>
+                <label for="payment">Payment method</label>
+                <select id="payment" name="payment" required>
+                  <option value="card" selected>Credit card (demo)</option>
+                  <option value="paypal">PayPal (demo)</option>
+                  <option value="bank">Bank transfer (demo)</option>
+                </select>
+              </div>
+              <div>
+                <label for="note">Order note (optional)</label>
+                <input id="note" name="note" type="text" placeholder="Leave at the door, etc." />
+              </div>
+            </div>
+
+            <button class="btn primary" type="submit">Place Order (Demo)</button>
+            <p class="note" style="margin:0">
+              Demo checkout: this form does not process real payments. Connect it to your backend / payment provider.
+            </p>
+          </form>
+        </div>
+
+        <aside class="summary" aria-label="Order summary">
+          <h3 style="margin:0">Order Summary</h3>
+
+          <div class="sumline"><span>Item price</span> <b id="itemPrice">$0.00</b></div>
+          <div class="sumline"><span>Quantity</span> <b id="sumQty">1</b></div>
+          <div class="sumline"><span>Shipping</span> <b id="shipping">$0.00</b></div>
+          <div class="sumline"><span>Estimated tax</span> <b id="tax">$0.00</b></div>
+
+          <div class="total">
+            <div class="sumline" style="color:rgba(255,255,255,.85)"><span>Total</span> <b id="total">$0.00</b></div>
+            <p class="note" style="margin:10px 0 0">
+              Prices shown in USD for demo. Replace with your pricing, currency, and tax rules.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="footer" aria-label="Footer">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between">
+        <div>
+          <b style="color:rgba(255,255,255,.86)">Dead Sea Salt Co.</b><br/>
+          Mineral bath & body salt • Clean and simple
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <a class="btn" href="#buy">Buy</a>
+          <a class="btn" href="#benefits">Benefits</a>
+          <a class="btn" href="#history">History</a>
+        </div>
+      </div>
+      <p class="note" style="margin-top:14px">
+        Disclaimer: This page is for informational and cosmetic use purposes only. Statements on this site have not been evaluated by medical authorities.
+        If you have a health condition, consult a qualified professional.
+      </p>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // --- Demo pricing rules (edit as needed) ---
+    const PRICES_USD = {
+      "500": 12.90,
+      "1000": 19.90,
+      "2500": 39.90
+    };
+
+    const SHIPPING_USD = {
+      "IL": 6.50,
+      "EU": 12.00,
+      "US": 16.00,
+      "WW": 18.50
+    };
+
+    // simple demo tax estimate
+    function estimateTax(subtotal) {
+      const rate = 0.06; // 6% demo
+      return subtotal * rate;
+    }
+
+    const els = {
+      size: document.getElementById("size"),
+      qty: document.getElementById("qty"),
+      country: document.getElementById("country"),
+      itemPrice: document.getElementById("itemPrice"),
+      sumQty: document.getElementById("sumQty"),
+      shipping: document.getElementById("shipping"),
+      tax: document.getElementById("tax"),
+      total: document.getElementById("total"),
+      form: document.getElementById("orderForm"),
+      toast: document.getElementById("toast")
+    };
+
+    function money(n) {
+      return "$" + (Math.round(n * 100) / 100).toFixed(2);
+    }
+
+    function recalc() {
+      const size = els.size.value;
+      const qty = Math.max(1, parseInt(els.qty.value || "1", 10));
+      const country = els.country.value;
+
+      const unit = PRICES_USD[size] ?? 0;
+      const ship = SHIPPING_USD[country] ?? 0;
+
+      const subtotal = unit * qty;
+      const tax = estimateTax(subtotal);
+      const total = subtotal + ship + tax;
+
+      els.itemPrice.textContent = money(subtotal);
+      els.sumQty.textContent = String(qty);
+      els.shipping.textContent = money(ship);
+      els.tax.textContent = money(tax);
+      els.total.textContent = money(total);
+    }
+
+    function showToast(msg) {
+      els.toast.textContent = msg;
+      els.toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => els.toast.classList.remove("show"), 2600);
+    }
+
+    ["change", "input"].forEach(evt => {
+      els.size.addEventListener(evt, recalc);
+      els.qty.addEventListener(evt, recalc);
+      els.country.addEventListener(evt, recalc);
+    });
+
+    els.form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // basic validity checks (demo)
+      const requiredIds = ["size","qty","country","name","email","address","payment","grind"];
+      for (const id of requiredIds) {
+        const el = document.getElementById(id);
+        if (!el || !el.value || (id === "qty" && parseInt(el.value, 10) < 1)) {
+          el?.focus();
+          showToast("Please complete all required fields.");
+          return;
+        }
+      }
+
+      recalc();
+
+      const order = {
+        size: els.size.value,
+        qty: parseInt(els.qty.value, 10),
+        country: els.country.value,
+        grind: document.getElementById("grind").value,
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        address: document.getElementById("address").value.trim(),
+        payment: document.getElementById("payment").value,
+        note: document.getElementById("note").value.trim(),
+        total: els.total.textContent
+      };
+
+      console.log("Demo order payload:", order);
+      showToast("Order placed (demo). Check console for the payload.");
+      els.form.reset();
+      document.getElementById("qty").value = 1;
+      recalc();
+    });
+
+    // initial calc
+    recalc();
+  </script>
+</body>
+</html>
