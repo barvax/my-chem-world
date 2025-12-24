@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
-
+import MoleculeSheet from "./pages/molecules/MoleculeSheet";
 import IngredientEditor from "./pages/ingredients/IngredientEditor";
 import IngredientFamilyEditor from "./pages/ingredient-families/IngredientFamilyEditor";
 import IngredientFamiliesPage from "./pages/ingredient-families/IngredientFamiliesPage";
@@ -40,6 +40,7 @@ export default function App() {
         <Route path="/molecules" element={<MoleculesPage />} />
         <Route path="/molecules/edit/:moleculeId" element={<MoleculeEditor />} />
         <Route path="/molecules/new" element={<MoleculeEditor />} />
+        <Route path="/molecules/view/:id" element={<MoleculeSheet />} />
       </Route>
     </Routes>
   );

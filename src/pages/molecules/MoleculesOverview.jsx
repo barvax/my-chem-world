@@ -40,7 +40,7 @@ export default function MoleculesOverview() {
           <MoleculeCard
             key={m.id}
             molecule={m}
-            onOpen={() => setSelected(m)}
+           onOpen={() => navigate(`/molecules/view/${m.id}`)}
             onEdit={() => navigate(`/molecules/edit/${m.id}`)}
             onDelete={() => handleDelete(m.id)}
           />
